@@ -69,3 +69,21 @@
 .dashboard-card p{color:var(--muted);font-size:13px;min-height:38px}
 .dashboard-card .btn{margin-top:10px}
 @media(max-width:760px){.dashboard-header{align-items:flex-start;flex-direction:column}.dashboard-header h2{font-size:26px}.dashboard-grid{grid-template-columns:1fr}.dashboard-section{padding:50px 6%}}
+
+/* MES VILLAS */
+.my-villas-panel{max-width:1100px;margin:28px auto 0;padding:24px;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 8px 24px rgba(16,42,67,.06)}
+.my-villas-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+.my-villas-heading h3{margin:4px 0 0;color:var(--navy);font-size:24px}
+.my-villas-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.my-villa-card{display:grid;grid-template-columns:150px 1fr;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#fff}
+.my-villa-img{min-height:170px;background-size:cover;background-position:center}
+.my-villa-body{padding:18px}
+.my-villa-body h4{margin:4px 0 7px;color:var(--navy);font-size:20px}
+.my-villa-body p{color:var(--muted);font-size:13px;margin:0 0 10px}
+.my-villa-body .btn{margin-top:12px}
+@media(max-width:760px){
+  .my-villas-grid{grid-template-columns:1fr}
+  .my-villa-card{grid-template-columns:1fr}
+  .my-villa-img{min-height:190px}
+  .my-villas-heading{align-items:flex-start;flex-direction:column}
+}
