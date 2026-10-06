@@ -21,13 +21,24 @@ function render(list=allVillas()){
   const favorites=getFavorites();
   list.forEach(v=>{
     const el=document.createElement("article");el.className="card";
-    el.innerHTML=`<div class="card-img" style="background-image:url('${safe(v.image)}')"><span class="badge">✓ Disponible</span><span class="city-badge">${safe(v.location)}</span><button class="favorite-btn ${favorites.includes(Number(v.id))?"active":""}" data-favorite="${v.id}" aria-label="Ajouter aux favoris">♥</button></div><div class="card-body"><h3>${safe(v.title)}</h3><p class="meta">📍 ${safe(v.location)} · 🛏 ${safe(v.rooms)} chambres</p><div class="amenities">${(v.amenities||[]).slice(0,3).map(a=>`<span>${safe(a)}</span>`).join("")}</div><span class="price">${price(v.price)}</span><div class="card-bottom"><button class="btn outline" data-view="${v.id}">Voir détails</button><a class="btn primary" target="_blank" rel="noopener" href="https://wa.me/${safe(v.phone)}?text=${encodeURIComponent("Bonjour, je suis intéressé(e) par "+v.title+" sur VillaLink.")}">WhatsApp</a></div></div>`;
+    el.innerHTML=`<div class="card-img" style="background-image:url('${safe((v.images&&v.images[0])||v.image)}')"><span class="badge">✓ Disponible</span><span class="city-badge">${safe(v.location)}</span><button class="favorite-btn ${favorites.includes(Number(v.id))?"active":""}" data-favorite="${v.id}" aria-label="Ajouter aux favoris">♥</button></div><div class="card-body"><h3>${safe(v.title)}</h3><p class="meta">📍 ${safe(v.location)} · 🛏 ${safe(v.rooms)} chambres</p><div class="amenities">${(v.amenities||[]).slice(0,3).map(a=>`<span>${safe(a)}</span>`).join("")}</div><span class="price">${price(v.price)}</span><div class="card-bottom"><button class="btn outline" data-view="${v.id}">Voir détails</button><a class="btn primary" target="_blank" rel="noopener" href="https://wa.me/${safe(v.phone)}?text=${encodeURIComponent("Bonjour, je suis intéressé(e) par "+v.title+" sur VillaLink.")}">WhatsApp</a></div></div>`;
     grid.appendChild(el);
   });
   grid.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>openVilla(Number(b.dataset.view)));
   grid.querySelectorAll("[data-favorite]").forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();toggleFavorite(Number(b.dataset.favorite))});
 }
-function openVilla(id){const v=allVillas().find(x=>x.id===id);if(!v)return;modalContent.innerHTML=`<div class="modal-image" style="background-image:url('${safe(v.image)}')"></div><div class="eyebrow">${safe(v.location)} · ${safe(v.rooms)} chambres</div><h2>${safe(v.title)}</h2><p class="modal-price">${price(v.price)}</p><div class="modal-amenities">${(v.amenities||[]).map(a=>`<span>✓ ${safe(a)}</span>`).join("")}</div><p style="margin-top:16px">${safe(v.description)}</p><a class="btn primary" style="margin-top:22px" target="_blank" rel="noopener" href="https://wa.me/${safe(v.phone)}?text=${encodeURIComponent("Bonjour, je suis intéressé(e) par "+v.title+" sur VillaLink.")}">Contacter le propriétaire</a>`;villaModal.classList.remove("hidden")}
+function openVilla(id){
+ const v=allVillas().find(x=>x.id===id);if(!v)return;
+ const images=Array.isArray(v.images)&&v.images.length?v.images:[v.image];
+ modalContent.innerHTML=`<div class="villa-gallery"><div class="gallery-main" id="galleryMain" style="background-image:url('${safe(images[0])}')"><button class="gallery-arrow gallery-prev" type="button" aria-label="Photo précédente">‹</button><button class="gallery-arrow gallery-next" type="button" aria-label="Photo suivante">›</button><span class="gallery-counter" id="galleryCounter">1 / ${images.length}</span></div><div class="gallery-thumbs">${images.map((img,i)=>`<button type="button" class="gallery-thumb ${i===0?"active":""}" data-gallery-index="${i}"><img src="${safe(img)}" alt="Photo ${i+1}"></button>`).join("")}</div></div><div class="eyebrow">${safe(v.location)} · ${safe(v.rooms)} chambres</div><h2>${safe(v.title)}</h2><p class="modal-price">${price(v.price)}</p><div class="modal-amenities">${(v.amenities||[]).map(a=>`<span>✓ ${safe(a)}</span>`).join("")}</div><p style="margin-top:16px">${safe(v.description)}</p><a class="btn primary" style="margin-top:22px" target="_blank" rel="noopener" href="https://wa.me/${safe(v.phone)}?text=${encodeURIComponent("Bonjour, je suis intéressé(e) par "+v.title+" sur VillaLink.")}">Contacter le propriétaire</a>`;
+ let current=0;
+ const main=document.getElementById("galleryMain"),counter=document.getElementById("galleryCounter");
+ const show=i=>{current=(i+images.length)%images.length;main.style.backgroundImage=`url('${safe(images[current])}')`;counter.textContent=`${current+1} / ${images.length}`;modalContent.querySelectorAll("[data-gallery-index]").forEach(b=>b.classList.toggle("active",Number(b.dataset.galleryIndex)===current))};
+ modalContent.querySelector(".gallery-prev")?.addEventListener("click",()=>show(current-1));
+ modalContent.querySelector(".gallery-next")?.addEventListener("click",()=>show(current+1));
+ modalContent.querySelectorAll("[data-gallery-index]").forEach(b=>b.addEventListener("click",()=>show(Number(b.dataset.galleryIndex))));
+ villaModal.classList.remove("hidden")
+}
 function applyFilters(){const loc=document.getElementById("locationInput").value.trim().toLowerCase(),rooms=Number(document.getElementById("roomsInput").value||0),max=Number(document.getElementById("priceInput").value||0);render(allVillas().filter(v=>(!loc||v.location.toLowerCase().includes(loc))&&(!rooms||v.rooms>=rooms)&&(!max||v.price<=max)))}
 document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();applyFilters();document.getElementById("villas").scrollIntoView({behavior:"smooth"})});
 document.querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));btn.classList.add("active");const city=btn.dataset.city;render(city?allVillas().filter(v=>v.location===city):allVillas());document.getElementById("villas").scrollIntoView({behavior:"smooth",block:"start"})}));
@@ -38,6 +49,7 @@ document.querySelectorAll(".modal").forEach(m=>m.onclick=e=>{if(e.target===m)m.c
 const photoFiles=document.getElementById("photoFiles");
 const photoPreview=document.getElementById("photoPreview");
 let selectedPhotoData="";
+let selectedPhotoDataList=[];
 function compressImage(file,maxWidth=1200,quality=.72){
  return new Promise(resolve=>{
   const reader=new FileReader();
@@ -57,9 +69,11 @@ function compressImage(file,maxWidth=1200,quality=.72){
 photoFiles?.addEventListener("change",async()=>{
  const files=[...photoFiles.files].slice(0,5);
  selectedPhotoData="";
+ selectedPhotoDataList=[];
  photoPreview.innerHTML="";
  for(const file of files){
   const data=await compressImage(file);
+  selectedPhotoDataList.push(data);
   if(!selectedPhotoData) selectedPhotoData=data;
   const box=document.createElement("div");box.className="photo-thumb";box.innerHTML=`<img src="${data}" alt="Photo de villa">`;photoPreview.appendChild(box);
  }
@@ -81,9 +95,10 @@ ownerForm.addEventListener("submit",e=>{
  const d=Object.fromEntries(new FormData(e.target).entries());
  const amenities=[...e.target.querySelectorAll('input[name="amenity"]:checked')].map(x=>x.value);
  const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
- const v={id:Date.now(),title:d.title,location:d.location,price:Number(d.price),rooms:Number(d.rooms),phone:d.phone.replace(/\D/g,""),image:selectedPhotoData||d.image||DEFAULT_VILLAS[0].image,description:d.description,amenities:amenities.length?amenities:["Nouvelle annonce"],ownerEmail:session?.email||"",ownerName:session?.name||""};
+ const images=selectedPhotoDataList.length?selectedPhotoDataList:[d.image||DEFAULT_VILLAS[0].image];
+ const v={id:Date.now(),title:d.title,location:d.location,price:Number(d.price),rooms:Number(d.rooms),phone:d.phone.replace(/\D/g,""),image:images[0],images:images,description:d.description,amenities:amenities.length?amenities:["Nouvelle annonce"],ownerEmail:session?.email||"",ownerName:session?.name||""};
  const custom=getCustom();custom.push(v);localStorage.setItem("villalink_villas",JSON.stringify(custom));
- render();e.target.reset();selectedPhotoData="";photoPreview.innerHTML="";updateOwnerPreview();ownerModal.classList.add("hidden");document.getElementById("villas").scrollIntoView({behavior:"smooth"});alert("Votre annonce a été ajoutée au prototype VillaLink.");
+ render();e.target.reset();selectedPhotoData="";selectedPhotoDataList=[];photoPreview.innerHTML="";updateOwnerPreview();ownerModal.classList.add("hidden");document.getElementById("villas").scrollIntoView({behavior:"smooth"});alert("Votre annonce a été ajoutée au prototype VillaLink.");
 });
 updateOwnerPreview();
 document.getElementById("menuBtn").onclick=()=>document.querySelector(".header nav").classList.toggle("mobile-open");
