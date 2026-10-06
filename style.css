@@ -130,3 +130,13 @@
 .admin-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
 .admin-actions .btn{font-size:12px;padding:9px 11px}
 @media(max-width:620px){.admin-stats{grid-template-columns:1fr 1fr}.admin-card{grid-template-columns:1fr}.admin-img{min-height:190px}}
+
+
+/* OUTILS ADMIN */
+.admin-tools{display:grid;gap:12px;margin-bottom:20px}
+.admin-tools input{width:100%;border:1px solid #dbe4e3;border-radius:11px;padding:13px 14px;font:inherit;outline:0;background:#fff}
+.admin-tools input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(22,168,120,.1)}
+.admin-filters{display:flex;gap:8px;flex-wrap:wrap}
+.admin-filter{border:1px solid var(--line);background:#fff;color:var(--navy);padding:9px 13px;border-radius:999px;font-size:12px;font-weight:850;cursor:pointer}
+.admin-filter:hover,.admin-filter.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.admin-body strong{color:var(--navy)}
