@@ -131,13 +131,7 @@ const closeAuth = document.getElementById("closeAuth");
 let authMode = "login";
 let authRole = "locataire";
 const openLogin = document.getElementById("openLogin");
-if (openLogin) {
-  openLogin.addEventListener("click", () => { authMode = "login"; updateAuth(); authModal.classList.remove("hidden"); });
-}
 const openSignup = document.getElementById("openSignup");
-if (openSignup) {
-  openSignup.addEventListener("click", () => { authMode = "signup"; updateAuth(); authModal.classList.remove("hidden"); });
-}
 if (closeAuth) closeAuth.addEventListener("click", () => authModal.classList.add("hidden"));
 document.querySelectorAll(".role").forEach(button => {
   button.addEventListener("click", () => {
@@ -191,7 +185,9 @@ function showDashboard(session){
   document.querySelectorAll(".owner-only").forEach(el=>{el.style.display=owner?"":"none"});document.querySelectorAll(".admin-only").forEach(el=>{el.classList.toggle("hidden",!admin)});
   dashboard.scrollIntoView({behavior:"smooth",block:"start"});
   const loginButton=document.getElementById("openLogin"),signupButton=document.getElementById("openSignup");
-  if(loginButton)loginButton.textContent="Mon espace";if(signupButton)signupButton.style.display="none";if(loginButton)loginButton.onclick=()=>dashboard.scrollIntoView({behavior:"smooth"});
+  if(loginButton)loginButton.textContent="Mon espace";
+  if(signupButton)signupButton.style.display="none";
+  bindAuthButtons();
 }
 function hideDashboard(){
   if(dashboard)dashboard.classList.add("hidden");myVillasPanel?.classList.add("hidden");favoritesPanel?.classList.add("hidden");
@@ -356,18 +352,20 @@ function bindAuthButtons(){
   const login=document.getElementById("openLogin");
   const signup=document.getElementById("openSignup");
   if(login){
-    login.onclick=null;
-    login.addEventListener("click",function(){
+    login.onclick=function(){
       const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
-      if(session){showDashboard(session);return}
-      authMode="login"; updateAuth(); authModal?.classList.remove("hidden");
-    });
+      if(session){dashboard?.scrollIntoView({behavior:"smooth",block:"start"});return}
+      authMode="login";
+      updateAuth();
+      authModal?.classList.remove("hidden");
+    };
   }
   if(signup){
-    signup.onclick=null;
-    signup.addEventListener("click",function(){
-      authMode="signup"; updateAuth(); authModal?.classList.remove("hidden");
-    });
+    signup.onclick=function(){
+      authMode="signup";
+      updateAuth();
+      authModal?.classList.remove("hidden");
+    };
   }
 }
 bindAuthButtons();
