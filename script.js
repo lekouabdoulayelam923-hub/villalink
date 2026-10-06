@@ -264,6 +264,12 @@ if (authForm) {
     authForm.reset();
     authModal.classList.add("hidden");
 
+    // Ouvrir automatiquement l'espace personnel après connexion/inscription
+    const session = JSON.parse(localStorage.getItem("villalink_session") || "null");
+    if (session && typeof showDashboard === "function") {
+      showDashboard(session);
+    }
+
   });
 }
 
