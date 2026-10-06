@@ -13,6 +13,10 @@
 <header class="header">
 <a class="logo" href="#accueil"><span class="logo-mark">V</span><span>Villa<span>Link</span></span></a>
 <nav><a href="#accueil">Accueil</a><a href="#villas">Villas</a><a href="#proprietaires">Propriétaires</a><a href="#apropos">À propos</a><a href="#contact">Contact</a></nav>
+<div class="header-actions">
+<button class="btn outline login-btn" id="openLogin">Se connecter</button>
+<button class="btn primary signup-btn" id="openSignup">Créer un compte</button>
+</div>
 <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
 </header>
 <main>
@@ -61,6 +65,20 @@
 </section>
 <footer id="contact"><div><a class="logo" href="#accueil"><span class="logo-mark">V</span><span>Villa<span>Link</span></span></a><p>Le lien direct vers votre villa.</p></div><div><h3>Navigation</h3><a href="#villas">Villas</a><a href="#proprietaires">Propriétaires</a><a href="#apropos">À propos</a></div><div><h3>Contact</h3><p>WhatsApp : +221 77 000 00 00</p><p>Email : contact@villalink.sn</p></div><div class="copyright">© 2026 VillaLink · Sénégal</div></footer>
 <div id="villaModal" class="modal hidden"><div class="modal-card"><button class="close" data-close>×</button><div id="modalContent"></div></div></div>
+<div id="authModal" class="modal hidden"><div class="modal-card auth-card"><button class="close" data-close>×</button>
+<div class="auth-brand"><span class="logo-mark">V</span><div><strong>VillaLink</strong><small>Votre espace personnel</small></div></div>
+<div class="eyebrow" id="authEyebrow">ESPACE VILLALINK</div><h2 id="authTitle">Se connecter</h2>
+<p class="auth-sub" id="authSub">Accédez à vos recherches et à vos annonces.</p>
+<div class="role-switch"><button class="role active" data-role="locataire">👤 Locataire</button><button class="role" data-role="proprietaire">🏠 Propriétaire</button></div>
+<form id="authForm" class="auth-form">
+<label>Nom complet<input id="authName" name="name" placeholder="Ex. Abdoulaye Lam" required></label>
+<label>Email<input name="email" type="email" placeholder="exemple@email.com" required></label>
+<label>Mot de passe<input name="password" type="password" placeholder="••••••••" minlength="6" required></label>
+<button class="btn primary" type="submit" id="authSubmit">Créer mon compte</button>
+</form>
+<button class="auth-toggle" id="authToggle">J’ai déjà un compte → Se connecter</button>
+<p class="note">Version prototype : les comptes sont enregistrés uniquement dans ce navigateur. La connexion sécurisée en ligne sera ajoutée avec notre base de données.</p>
+</div></div>
 <a class="floating-wa" href="https://wa.me/221770000000?text=Bonjour%20VillaLink%2C%20je%20souhaite%20avoir%20des%20informations." target="_blank" rel="noopener" aria-label="Contacter VillaLink sur WhatsApp">WhatsApp</a>
 <div id="ownerModal" class="modal hidden"><div class="modal-card"><button class="close" data-close>×</button><div class="eyebrow">NOUVELLE ANNONCE</div><h2>Publier une villa</h2><form id="ownerForm" class="owner-form">
 <div class="form-section-title">1. Informations générales</div>
