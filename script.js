@@ -119,295 +119,167 @@ const closeAuth = document.getElementById("closeAuth");
 
 let authMode = "login";
 let authRole = "locataire";
-
-// Ouvrir connexion
 const openLogin = document.getElementById("openLogin");
-
 if (openLogin) {
-  openLogin.addEventListener("click", () => {
-    authMode = "login";
-    updateAuth();
-    authModal.classList.remove("hidden");
-  });
+  openLogin.addEventListener("click", () => { authMode = "login"; updateAuth(); authModal.classList.remove("hidden"); });
 }
-
-// Ouvrir inscription
 const openSignup = document.getElementById("openSignup");
-
 if (openSignup) {
-  openSignup.addEventListener("click", () => {
-    authMode = "signup";
-    updateAuth();
-    authModal.classList.remove("hidden");
-  });
+  openSignup.addEventListener("click", () => { authMode = "signup"; updateAuth(); authModal.classList.remove("hidden"); });
 }
-
-// Fermer
-if (closeAuth) {
-  closeAuth.addEventListener("click", () => {
-    authModal.classList.add("hidden");
-  });
-}
-
-// Choix Locataire / Propriétaire
+if (closeAuth) closeAuth.addEventListener("click", () => authModal.classList.add("hidden"));
 document.querySelectorAll(".role").forEach(button => {
   button.addEventListener("click", () => {
-
-    document.querySelectorAll(".role").forEach(btn => {
-      btn.classList.remove("active");
-    });
-
+    document.querySelectorAll(".role").forEach(btn => btn.classList.remove("active"));
     button.classList.add("active");
-
     authRole = button.dataset.role;
   });
 });
-
-// Modifier l'affichage connexion / inscription
 function updateAuth() {
-
   const inscription = authMode === "signup";
-
-  authTitle.textContent = inscription
-    ? "Créer un compte"
-    : "Se connecter";
-
-  authSubmit.textContent = inscription
-    ? "Créer mon compte"
-    : "Se connecter";
-
-  authToggle.textContent = inscription
-    ? "J’ai déjà un compte → Se connecter"
-    : "Pas encore de compte → Créer un compte";
-
-  if (authNameField) {
-    authNameField.style.display = inscription ? "grid" : "none";
-  }
+  authTitle.textContent = inscription ? "Créer un compte" : "Se connecter";
+  authSubmit.textContent = inscription ? "Créer mon compte" : "Se connecter";
+  authToggle.textContent = inscription ? "J’ai déjà un compte → Se connecter" : "Pas encore de compte → Créer un compte";
+  if (authNameField) authNameField.style.display = inscription ? "grid" : "none";
 }
-
-// Passer de connexion à inscription
-if (authToggle) {
-  authToggle.addEventListener("click", () => {
-
-    authMode = authMode === "login"
-      ? "signup"
-      : "login";
-
-    updateAuth();
-  });
-}
-
-// Traitement du formulaire
+if (authToggle) authToggle.addEventListener("click", () => { authMode = authMode === "login" ? "signup" : "login"; updateAuth(); });
 if (authForm) {
-
   authForm.addEventListener("submit", function(event) {
-
     event.preventDefault();
-
-    const formData = new FormData(authForm);
-
-    const name = formData.get("name") || "";
-    const email = formData.get("email");
-    const password = formData.get("password");
-
-    let accounts = [];
-
-    try {
-      accounts = JSON.parse(
-        localStorage.getItem("villalink_accounts") || "[]"
-      );
-    } catch (error) {
-      accounts = [];
-    }
-
-    // CRÉATION DE COMPTE
-    if (authMode === "signup") {
-
-      const exists = accounts.some(
-        account =>
-          account.email.toLowerCase() === email.toLowerCase()
-      );
-
-      if (exists) {
-        alert("Un compte existe déjà avec cet email.");
-        return;
-      }
-
-      const account = {
-        name: name,
-        email: email,
-        password: password,
-        role: authRole
-      };
-
-      accounts.push(account);
-
-      localStorage.setItem(
-        "villalink_accounts",
-        JSON.stringify(accounts)
-      );
-
-      localStorage.setItem(
-        "villalink_session",
-        JSON.stringify({
-          name: name,
-          email: email,
-          role: authRole
-        })
-      );
-
+    const formData = new FormData(authForm),name=formData.get("name")||"",email=formData.get("email"),password=formData.get("password");
+    let accounts=[];try{accounts=JSON.parse(localStorage.getItem("villalink_accounts")||"[]")}catch(error){accounts=[]}
+    if(authMode==="signup"){
+      const exists=accounts.some(account=>account.email.toLowerCase()===email.toLowerCase());
+      if(exists){alert("Un compte existe déjà avec cet email.");return}
+      accounts.push({name,email,password,role:authRole});
+      localStorage.setItem("villalink_accounts",JSON.stringify(accounts));
+      localStorage.setItem("villalink_session",JSON.stringify({name,email,role:authRole}));
       alert("🎉 Compte VillaLink créé avec succès !");
-
+    }else{
+      const account=accounts.find(account=>account.email.toLowerCase()===email.toLowerCase()&&account.password===password);
+      if(!account){alert("❌ Email ou mot de passe incorrect.");return}
+      localStorage.setItem("villalink_session",JSON.stringify({name:account.name,email:account.email,role:account.role}));
+      alert("👋 Bienvenue sur VillaLink, "+account.name+" !");
     }
-
-    // CONNEXION
-    else {
-
-      const account = accounts.find(
-        account =>
-          account.email.toLowerCase() === email.toLowerCase() &&
-          account.password === password
-      );
-
-      if (!account) {
-        alert("❌ Email ou mot de passe incorrect.");
-        return;
-      }
-
-      localStorage.setItem(
-        "villalink_session",
-        JSON.stringify({
-          name: account.name,
-          email: account.email,
-          role: account.role
-        })
-      );
-
-      alert(
-        "👋 Bienvenue sur VillaLink, " +
-        account.name +
-        " !"
-      );
-    }
-
-    authForm.reset();
-    authModal.classList.add("hidden");
-
-    // Ouvrir automatiquement l'espace personnel après connexion/inscription
-    const session = JSON.parse(localStorage.getItem("villalink_session") || "null");
-    if (session && typeof showDashboard === "function") {
-      showDashboard(session);
-    }
-
+    authForm.reset();authModal.classList.add("hidden");
+    const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
+    if(session&&typeof showDashboard==="function")showDashboard(session);
   });
 }
-
-// Initialiser l'affichage
 updateAuth();
 
-
-/* ===============================
-   TABLEAU DE BORD
-   =============================== */
-const dashboard = document.getElementById("dashboard");
-const dashboardName = document.getElementById("dashboardName");
-const dashboardRole = document.getElementById("dashboardRole");
-const logoutBtn = document.getElementById("logoutBtn");
-const myVillasBtn = document.getElementById("myVillasBtn");
-
+// ===============================
+// TABLEAU DE BORD
+// ===============================
+const dashboard=document.getElementById("dashboard"),dashboardName=document.getElementById("dashboardName"),dashboardRole=document.getElementById("dashboardRole"),logoutBtn=document.getElementById("logoutBtn"),myVillasBtn=document.getElementById("myVillasBtn");
 function showDashboard(session){
-  if(!dashboard || !session) return;
-  dashboard.classList.remove("hidden");
-  dashboardName.textContent = session.name || "Utilisateur";
-  const owner = session.role === "proprietaire";
-  dashboardRole.textContent = owner ? "🏠 Propriétaire" : "👤 Locataire";
-  document.querySelectorAll(".owner-only").forEach(el => {
-    el.style.display = owner ? "" : "none";
-  });
-  dashboard.scrollIntoView({behavior:"smooth", block:"start"});
-  const loginButton=document.getElementById("openLogin");
-  const signupButton=document.getElementById("openSignup");
-  if(loginButton) loginButton.textContent="Mon espace";
-  if(signupButton) signupButton.style.display="none";
-  if(loginButton) loginButton.onclick=()=>dashboard.scrollIntoView({behavior:"smooth"});
+  if(!dashboard||!session)return;
+  dashboard.classList.remove("hidden");dashboardName.textContent=session.name||"Utilisateur";
+  const owner=session.role==="proprietaire";dashboardRole.textContent=owner?"🏠 Propriétaire":"👤 Locataire";
+  document.querySelectorAll(".owner-only").forEach(el=>{el.style.display=owner?"":"none"});
+  dashboard.scrollIntoView({behavior:"smooth",block:"start"});
+  const loginButton=document.getElementById("openLogin"),signupButton=document.getElementById("openSignup");
+  if(loginButton)loginButton.textContent="Mon espace";if(signupButton)signupButton.style.display="none";if(loginButton)loginButton.onclick=()=>dashboard.scrollIntoView({behavior:"smooth"});
 }
-
 function hideDashboard(){
-  if(dashboard) dashboard.classList.add("hidden");myVillasPanel?.classList.add("hidden");favoritesPanel?.classList.add("hidden");
-  const loginButton=document.getElementById("openLogin");
-  const signupButton=document.getElementById("openSignup");
-  if(loginButton) loginButton.textContent="Se connecter";
-  if(loginButton) loginButton.onclick=null;
-  if(signupButton) signupButton.style.display="";
+  if(dashboard)dashboard.classList.add("hidden");myVillasPanel?.classList.add("hidden");favoritesPanel?.classList.add("hidden");
+  const loginButton=document.getElementById("openLogin"),signupButton=document.getElementById("openSignup");
+  if(loginButton)loginButton.textContent="Se connecter";if(loginButton)loginButton.onclick=null;if(signupButton)signupButton.style.display="";
+}
+if(logoutBtn)logoutBtn.addEventListener("click",()=>{localStorage.removeItem("villalink_session");hideDashboard();alert("Vous êtes déconnecté de VillaLink.");window.scrollTo({top:0,behavior:"smooth"})});
+const favoritesPanel=document.getElementById("favoritesPanel"),favoritesGrid=document.getElementById("favoritesGrid"),closeFavorites=document.getElementById("closeFavorites"),myVillasPanel=document.getElementById("myVillasPanel"),myVillasGrid=document.getElementById("myVillasGrid"),closeMyVillas=document.getElementById("closeMyVillas");
+
+function editMyVilla(id){
+  const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
+  if(!session?.email)return;
+  const custom=getCustom();
+  const index=custom.findIndex(v=>Number(v.id)===Number(id)&&String(v.ownerEmail||"").toLowerCase()===String(session.email).toLowerCase());
+  if(index<0)return;
+  const v=custom[index];
+  const form=document.getElementById("ownerForm");
+  if(!form)return;
+  ownerModal.classList.remove("hidden");
+  form.querySelector('[name="title"]').value=v.title||"";
+  form.querySelector('[name="location"]').value=v.location||"";
+  form.querySelector('[name="price"]').value=v.price||"";
+  form.querySelector('[name="rooms"]').value=v.rooms||"";
+  form.querySelector('[name="phone"]').value=v.phone||"";
+  form.querySelector('[name="description"]').value=v.description||"";
+  form.querySelectorAll('input[name="amenity"]').forEach(x=>x.checked=(v.amenities||[]).includes(x.value));
+  selectedPhotoData=(v.images&&v.images[0])||v.image||"";
+  selectedPhotoDataList=Array.isArray(v.images)&&v.images.length?[...v.images]:[selectedPhotoData];
+  photoPreview.innerHTML="";
+  selectedPhotoDataList.forEach(data=>{const box=document.createElement("div");box.className="photo-thumb";box.innerHTML=`<img src="${safe(data)}" alt="Photo de villa">`;photoPreview.appendChild(box)});
+  photoPreview.insertAdjacentHTML("beforeend",`<div class="photo-count">${selectedPhotoDataList.length} photo${selectedPhotoDataList.length>1?"s":""} sélectionnée${selectedPhotoDataList.length>1?"s":""}</div>`);
+  form.dataset.editingId=String(v.id);
+  updateOwnerPreview();
 }
 
-if(logoutBtn){
-  logoutBtn.addEventListener("click",()=>{
-    localStorage.removeItem("villalink_session");
-    hideDashboard();
-    alert("Vous êtes déconnecté de VillaLink.");
-    window.scrollTo({top:0,behavior:"smooth"});
-  });
+function cancelVillaEdit(){
+  const form=document.getElementById("ownerForm");
+  if(!form)return;
+  delete form.dataset.editingId;
+  form.reset();selectedPhotoData="";selectedPhotoDataList=[];photoPreview.innerHTML="";updateOwnerPreview();ownerModal.classList.add("hidden");
 }
 
-const favoritesPanel=document.getElementById("favoritesPanel");const favoritesGrid=document.getElementById("favoritesGrid");const closeFavorites=document.getElementById("closeFavorites");const myVillasPanel=document.getElementById("myVillasPanel");
-const myVillasGrid=document.getElementById("myVillasGrid");
-const closeMyVillas=document.getElementById("closeMyVillas");
+function deleteMyVilla(id){
+  const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
+  if(!session?.email)return;
+  const custom=getCustom();
+  const index=custom.findIndex(v=>Number(v.id)===Number(id)&&String(v.ownerEmail||"").toLowerCase()===String(session.email).toLowerCase());
+  if(index<0)return;
+  const v=custom[index];
+  if(!confirm("Supprimer définitivement « "+v.title+" » ?"))return;
+  custom.splice(index,1);
+  localStorage.setItem("villalink_villas",JSON.stringify(custom));
+  render();
+  showMyVillas();
+  alert("La villa a été supprimée.");
+}
 
 function showMyVillas(){
  favoritesPanel?.classList.add("hidden");
-  const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
-  if(!session || session.role!=="proprietaire") return;
-  const mine=getCustom().filter(v=>String(v.ownerEmail||"").toLowerCase()===String(session.email||"").toLowerCase());
-  if(!mine.length){
-    if(myVillasPanel) myVillasPanel.classList.add("hidden");
-    alert("Vous n'avez pas encore publié de villa. Cliquez sur « Propriétaires » pour créer votre première annonce.");
-    return;
-  }
-  if(myVillasGrid){
-    myVillasGrid.innerHTML=mine.map(v=>`
-      <article class="my-villa-card">
-        <div class="my-villa-img" style="background-image:url('${safe(v.image)}')"></div>
-        <div class="my-villa-body">
-          <div class="eyebrow">${safe(v.location)}</div>
-          <h4>${safe(v.title)}</h4>
-          <p>🛏 ${safe(v.rooms)} chambres · ${price(v.price)}</p>
-          <div class="amenities">${(v.amenities||[]).slice(0,3).map(a=>`<span>${safe(a)}</span>`).join("")}</div>
+ const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
+ if(!session||session.role!=="proprietaire")return;
+ const mine=getCustom().filter(v=>String(v.ownerEmail||"").toLowerCase()===String(session.email||"").toLowerCase());
+ if(!mine.length){
+  if(myVillasPanel)myVillasPanel.classList.add("hidden");
+  alert("Vous n'avez pas encore publié de villa. Cliquez sur « Propriétaires » pour créer votre première annonce.");
+  return;
+ }
+ if(myVillasGrid){
+  myVillasGrid.innerHTML=mine.map(v=>`
+    <article class="my-villa-card">
+      <div class="my-villa-img" style="background-image:url('${safe(v.image)}')"></div>
+      <div class="my-villa-body">
+        <div class="eyebrow">${safe(v.location)}</div>
+        <h4>${safe(v.title)}</h4>
+        <p>🛏 ${safe(v.rooms)} chambres · ${price(v.price)}</p>
+        <div class="amenities">${(v.amenities||[]).slice(0,3).map(a=>`<span>${safe(a)}</span>`).join("")}</div>
+        <div class="my-villa-actions">
           <button class="btn outline" data-my-villa="${v.id}">Voir l'annonce</button>
+          <button class="btn outline" data-edit-villa="${v.id}">Modifier</button>
+          <button class="btn danger" data-delete-villa="${v.id}">Supprimer</button>
         </div>
-      </article>`).join("");
-    myVillasGrid.querySelectorAll("[data-my-villa]").forEach(btn=>{
-      btn.addEventListener("click",()=>openVilla(Number(btn.dataset.myVilla)));
-    });
-  }
-  myVillasPanel?.classList.remove("hidden");
-  myVillasPanel?.scrollIntoView({behavior:"smooth",block:"start"});
+      </div>
+    </article>`).join("");
+  myVillasGrid.querySelectorAll("[data-my-villa]").forEach(btn=>btn.addEventListener("click",()=>openVilla(Number(btn.dataset.myVilla))));
+  myVillasGrid.querySelectorAll("[data-edit-villa]").forEach(btn=>btn.addEventListener("click",()=>editMyVilla(Number(btn.dataset.editVilla))));
+  myVillasGrid.querySelectorAll("[data-delete-villa]").forEach(btn=>btn.addEventListener("click",()=>deleteMyVilla(Number(btn.dataset.deleteVilla))));
+ }
+ myVillasPanel?.classList.remove("hidden");myVillasPanel?.scrollIntoView({behavior:"smooth",block:"start"});
 }
-
-if(myVillasBtn){
-  myVillasBtn.addEventListener("click",showMyVillas);
-}
-if(closeMyVillas){
-  closeMyVillas.addEventListener("click",()=>myVillasPanel?.classList.add("hidden"));
-}
-
+if(myVillasBtn)myVillasBtn.addEventListener("click",showMyVillas);
+if(closeMyVillas)closeMyVillas.addEventListener("click",()=>myVillasPanel?.classList.add("hidden"));
 function showFavorites(){
  const s=JSON.parse(localStorage.getItem("villalink_session")||"null");if(!s?.email){alert("Connectez-vous pour utiliser vos favoris.");return}
- const ids=getFavorites();const mine=allVillas().filter(v=>ids.includes(Number(v.id)));
- if(favoritesGrid){favoritesGrid.innerHTML="";if(!mine.length){favoritesGrid.innerHTML='<div class="empty-favorites"><div>❤️</div><h3>Aucun favori pour le moment</h3><p>Cliquez sur le cœur d’une villa pour la retrouver ici.</p><a class="btn primary" href="#villas">Découvrir les villas</a></div>'}else{mine.forEach(v=>{const el=document.createElement("article");el.className="my-villa-card";el.innerHTML='<div class="my-villa-img" style="background-image:url(\''+safe(v.image)+'\')"></div><div class="my-villa-body"><div class="eyebrow">'+safe(v.location)+'</div><h4>'+safe(v.title)+'</h4><p>🛏 '+safe(v.rooms)+' chambres · '+price(v.price)+'</p><div class="amenities">'+(v.amenities||[]).slice(0,3).map(a=>'<span>'+safe(a)+'</span>').join("")+'</div><div class="favorite-actions"><button class="btn outline" data-favorite-view="'+v.id+'">Voir l’annonce</button><button class="btn favorite-remove" data-remove-favorite="'+v.id+'">Retirer ❤️</button></div></div>';favoritesGrid.appendChild(el)})}
+ const ids=getFavorites(),mine=allVillas().filter(v=>ids.includes(Number(v.id)));
+ if(favoritesGrid){favoritesGrid.innerHTML="";if(!mine.length){favoritesGrid.innerHTML='<div class="empty-favorites"><div>❤️</div><h3>Aucun favori pour le moment</h3><p>Cliquez sur le cœur d’une villa pour la retrouver ici.</p><a class="btn primary" href="#villas">Découvrir les villas</a></div>'}else{mine.forEach(v=>{const el=document.createElement("article");el.className="my-villa-card";el.innerHTML='<div class="my-villa-img" style="background-image:url(\\''+safe(v.image)+'\\')"></div><div class="my-villa-body"><div class="eyebrow">'+safe(v.location)+'</div><h4>'+safe(v.title)+'</h4><p>🛏 '+safe(v.rooms)+' chambres · '+price(v.price)+'</p><div class="amenities">'+(v.amenities||[]).slice(0,3).map(a=>'<span>'+safe(a)+'</span>').join("")+'</div><div class="favorite-actions"><button class="btn outline" data-favorite-view="'+v.id+'">Voir l’annonce</button><button class="btn favorite-remove" data-remove-favorite="'+v.id+'">Retirer ❤️</button></div></div>';favoritesGrid.appendChild(el)})}
   favoritesGrid.querySelectorAll("[data-favorite-view]").forEach(b=>b.onclick=()=>openVilla(Number(b.dataset.favoriteView)));favoritesGrid.querySelectorAll("[data-remove-favorite]").forEach(b=>b.onclick=()=>{saveFavorites(getFavorites().filter(id=>id!==Number(b.dataset.removeFavorite)));showFavorites();render()})
  }
  myVillasPanel?.classList.add("hidden");favoritesPanel?.classList.remove("hidden");favoritesPanel?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 document.getElementById("favoritesBtn")?.addEventListener("click",showFavorites);if(closeFavorites)closeFavorites.addEventListener("click",()=>favoritesPanel?.classList.add("hidden"));
-document.getElementById("searchesBtn")?.addEventListener("click",()=>{
-  document.getElementById("villas")?.scrollIntoView({behavior:"smooth"});
-});
-
-function restoreSession(){
-  try{
-    const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
-    if(session) showDashboard(session);
-  }catch(e){}
-}
+document.getElementById("searchesBtn")?.addEventListener("click",()=>{document.getElementById("villas")?.scrollIntoView({behavior:"smooth"})});
+function restoreSession(){try{const session=JSON.parse(localStorage.getItem("villalink_session")||"null");if(session)showDashboard(session)}catch(e){}}
 restoreSession();
