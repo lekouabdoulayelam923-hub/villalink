@@ -134,13 +134,19 @@ const openLogin = document.getElementById("openLogin");
 const openSignup = document.getElementById("openSignup");
 if (closeAuth) closeAuth.addEventListener("click", () => authModal.classList.add("hidden"));
 document.querySelectorAll(".role").forEach(button => {
-  button.addEventListener("click", () => {
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
     document.querySelectorAll(".role").forEach(btn => btn.classList.remove("active"));
     button.classList.add("active");
-    authRole = button.dataset.role;
+    authRole = button.dataset.role || "locataire";
     updateAuth();
   });
 });
+function setAuthRole(role){
+  authRole=role||"locataire";
+  document.querySelectorAll(".role").forEach(btn=>btn.classList.toggle("active",btn.dataset.role===authRole));
+  updateAuth();
+}
 function updateAuth() {
   const inscription = authMode === "signup";
   authTitle.textContent = inscription ? (authRole==="admin" ? "Créer un compte administrateur (test)" : "Créer un compte") : "Se connecter";
