@@ -62,7 +62,21 @@
 <footer id="contact"><div><a class="logo" href="#accueil"><span class="logo-mark">V</span><span>Villa<span>Link</span></span></a><p>Le lien direct vers votre villa.</p></div><div><h3>Navigation</h3><a href="#villas">Villas</a><a href="#proprietaires">Propriétaires</a><a href="#apropos">À propos</a></div><div><h3>Contact</h3><p>WhatsApp : +221 77 000 00 00</p><p>Email : contact@villalink.sn</p></div><div class="copyright">© 2026 VillaLink · Sénégal</div></footer>
 <div id="villaModal" class="modal hidden"><div class="modal-card"><button class="close" data-close>×</button><div id="modalContent"></div></div></div>
 <a class="floating-wa" href="https://wa.me/221770000000?text=Bonjour%20VillaLink%2C%20je%20souhaite%20avoir%20des%20informations." target="_blank" rel="noopener" aria-label="Contacter VillaLink sur WhatsApp">WhatsApp</a>
-<div id="ownerModal" class="modal hidden"><div class="modal-card"><button class="close" data-close>×</button><div class="eyebrow">NOUVELLE ANNONCE</div><h2>Publier une villa</h2><form id="ownerForm" class="owner-form"><input name="title" placeholder="Nom de la villa" required><input name="location" placeholder="Localisation, ex. Saly" required><input name="price" type="number" min="0" placeholder="Prix par nuit (FCFA)" required><input name="rooms" type="number" min="1" placeholder="Nombre de chambres" required><input name="phone" placeholder="Numéro WhatsApp" required><input name="image" placeholder="URL de la photo (optionnel)"><textarea name="description" rows="4" placeholder="Décrivez votre villa..." required></textarea><button class="btn primary" type="submit">Publier l'annonce</button></form><p class="note">Version prototype : l'annonce est enregistrée dans ce navigateur.</p></div></div>
+<div id="ownerModal" class="modal hidden"><div class="modal-card"><button class="close" data-close>×</button><div class="eyebrow">NOUVELLE ANNONCE</div><h2>Publier une villa</h2><form id="ownerForm" class="owner-form">
+<div class="form-section-title">1. Informations générales</div>
+<div class="form-grid"><label>Nom de la villa<input name="title" placeholder="Ex. Villa Teranga" required></label><label>Ville / zone<input name="location" placeholder="Ex. Saly" required></label><label>Prix par nuit (FCFA)<input name="price" type="number" min="0" placeholder="Ex. 75000" required></label><label>Nombre de chambres<input name="rooms" type="number" min="1" placeholder="Ex. 4" required></label></div>
+<div class="form-section-title">2. Contact propriétaire</div>
+<label>WhatsApp<input name="phone" placeholder="Ex. 77 000 00 00" required></label>
+<div class="form-section-title">3. Présentation</div>
+<label>Photo principale (URL)<input name="image" placeholder="Collez l'URL de votre photo"></label>
+<div class="form-section-title">4. Équipements</div>
+<div class="check-grid">
+<label><input type="checkbox" name="amenity" value="Piscine"> Piscine</label><label><input type="checkbox" name="amenity" value="Climatisation"> Climatisation</label><label><input type="checkbox" name="amenity" value="Wi-Fi"> Wi-Fi</label><label><input type="checkbox" name="amenity" value="Parking"> Parking</label><label><input type="checkbox" name="amenity" value="Jardin"> Jardin</label><label><input type="checkbox" name="amenity" value="Terrasse"> Terrasse</label>
+</div>
+<label>Description<textarea name="description" rows="5" placeholder="Présentez votre villa, son environnement et ce qui la rend intéressante..." required></textarea></label>
+<div class="preview-box" id="ownerPreview"><div class="preview-placeholder">L’aperçu de votre annonce apparaîtra ici</div></div>
+<button class="btn primary" type="submit">Publier mon annonce</button>
+</form><p class="note">Prototype V2 : votre annonce est enregistrée dans ce navigateur. La connexion à une vraie base de données viendra ensuite.</p></div></div>
 <script src="script.js"></script>
 </body>
 </html>
