@@ -316,7 +316,12 @@ function showAdmin(){
 }
 function adminSetStatus(id,status){
  const session=JSON.parse(localStorage.getItem("villalink_session")||"null");if(session?.role!=="admin")return;
- const custom=getCustom(),v=custom.find(x=>Number(x.id)===Number(id));if(!v)return;v.status=status;localStorage.setItem("villalink_villas",JSON.stringify(custom));render();showAdmin();
+ const custom=getCustom(),v=custom.find(x=>Number(x.id)===Number(id));if(!v)return;
+ v.status=status;
+ localStorage.setItem("villalink_villas",JSON.stringify(custom));
+ render();
+ showAdmin();
+ alert(status==="publie"?"✅ Annonce acceptée et publiée !":"🔴 Annonce refusée. Le propriétaire verra le nouveau statut dans son espace.");
 }
 function adminDelete(id){
  const session=JSON.parse(localStorage.getItem("villalink_session")||"null");if(session?.role!=="admin")return;
