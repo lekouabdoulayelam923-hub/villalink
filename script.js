@@ -260,23 +260,32 @@ function showMyVillas(){
   alert("Vous n'avez pas encore publié de villa. Cliquez sur « Propriétaires » pour créer votre première annonce.");
   return;
  }
+ const counts={attente:mine.filter(v=>v.status==="attente").length,publie:mine.filter(v=>v.status==="publie").length,refuse:mine.filter(v=>v.status==="refuse").length};
  if(myVillasGrid){
-  myVillasGrid.innerHTML=mine.map(v=>`
+  myVillasGrid.innerHTML=`
+    <div class="my-villas-summary">
+      <div><strong>${mine.length}</strong><span>Total</span></div>
+      <div class="summary-wait"><strong>${counts.attente}</strong><span>En attente</span></div>
+      <div class="summary-live"><strong>${counts.publie}</strong><span>Publiées</span></div>
+      <div class="summary-refuse"><strong>${counts.refuse}</strong><span>Refusées</span></div>
+    </div>
+    ${mine.map(v=>`
     <article class="my-villa-card">
-      <div class="my-villa-img" style="background-image:url('${safe(v.image)}')"></div>
+      <div class="my-villa-img" style="background-image:url('${safe((v.images&&v.images[0])||v.image)}')"><span class="my-villa-photo-count">📷 ${Array.isArray(v.images)?v.images.length:1}</span></div>
       <div class="my-villa-body">
         <div class="eyebrow">${safe(v.location)}</div>
         <h4>${safe(v.title)}</h4>
         <p>🛏 ${safe(v.rooms)} chambres · ${price(v.price)}</p>
         <div class="amenities">${(v.amenities||[]).slice(0,3).map(a=>`<span>${safe(a)}</span>`).join("")}</div>
         <div class="listing-status ${v.status==="refuse"?"status-refuse":v.status==="attente"?"status-attente":"status-publie"}">${v.status==="refuse"?"🔴 Refusée":v.status==="attente"?"🟠 En attente de validation":"🟢 Publiée"}</div>
+        ${v.status==="refuse"?'<p class="status-help">Cette annonce doit être modifiée avant une nouvelle validation.</p>':v.status==="attente"?'<p class="status-help">Votre annonce sera visible après validation par l’administration.</p>':'<p class="status-help">Votre annonce est actuellement visible par les locataires.</p>'}
         <div class="my-villa-actions">
           <button class="btn outline" data-my-villa="${v.id}">Voir l'annonce</button>
           <button class="btn outline" data-edit-villa="${v.id}">Modifier</button>
           <button class="btn danger" data-delete-villa="${v.id}">Supprimer</button>
         </div>
       </div>
-    </article>`).join("");
+    </article>`).join("")`;
   myVillasGrid.querySelectorAll("[data-my-villa]").forEach(btn=>btn.addEventListener("click",()=>openVilla(Number(btn.dataset.myVilla))));
   myVillasGrid.querySelectorAll("[data-edit-villa]").forEach(btn=>btn.addEventListener("click",()=>editMyVilla(Number(btn.dataset.editVilla))));
   myVillasGrid.querySelectorAll("[data-delete-villa]").forEach(btn=>btn.addEventListener("click",()=>deleteMyVilla(Number(btn.dataset.deleteVilla))));
