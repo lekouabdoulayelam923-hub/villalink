@@ -67,8 +67,13 @@
 <div class="form-grid"><label>Nom de la villa<input name="title" placeholder="Ex. Villa Teranga" required></label><label>Ville / zone<input name="location" placeholder="Ex. Saly" required></label><label>Prix par nuit (FCFA)<input name="price" type="number" min="0" placeholder="Ex. 75000" required></label><label>Nombre de chambres<input name="rooms" type="number" min="1" placeholder="Ex. 4" required></label></div>
 <div class="form-section-title">2. Contact propriétaire</div>
 <label>WhatsApp<input name="phone" placeholder="Ex. 77 000 00 00" required></label>
-<div class="form-section-title">3. Présentation</div>
-<label>Photo principale (URL)<input name="image" placeholder="Collez l'URL de votre photo"></label>
+<div class="form-section-title">3. Photos de la villa</div>
+<label>Ajouter des photos
+<input id="photoFiles" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+<small class="upload-help">Ajoutez jusqu’à 5 photos. La première sera utilisée comme photo principale.</small>
+</label>
+<div id="photoPreview" class="photo-preview"></div>
+<label>Ou utiliser une URL de photo (optionnel)<input name="image" placeholder="https://..."></label>
 <div class="form-section-title">4. Équipements</div>
 <div class="check-grid">
 <label><input type="checkbox" name="amenity" value="Piscine"> Piscine</label><label><input type="checkbox" name="amenity" value="Climatisation"> Climatisation</label><label><input type="checkbox" name="amenity" value="Wi-Fi"> Wi-Fi</label><label><input type="checkbox" name="amenity" value="Parking"> Parking</label><label><input type="checkbox" name="amenity" value="Jardin"> Jardin</label><label><input type="checkbox" name="amenity" value="Terrasse"> Terrasse</label>
