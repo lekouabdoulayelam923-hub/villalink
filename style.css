@@ -113,3 +113,5 @@
 .btn.danger{border:1px solid #dc3545;color:#dc3545;background:#fff}
 .btn.danger:hover{background:#dc3545;color:#fff}
 @media(max-width:620px){.my-villa-actions .btn{flex:1;min-width:110px}}
+
+.listing-status{display:inline-block;margin-top:12px;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;background:#e8f7ee;color:#18794e}.status-attente{background:#fff4db;color:#9a6700}.status-refuse{background:#fde8e8;color:#b42318}
