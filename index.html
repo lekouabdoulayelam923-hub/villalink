@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="VillaLink — trouvez et contactez directement des propriétaires de villas au Sénégal.">
+<meta name="description" content="VillaLink — trouvez votre villa au Sénégal et contactez directement le propriétaire.">
+<meta name="theme-color" content="#102a43">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <title>VillaLink — Le lien direct vers votre villa</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -38,13 +40,28 @@
 </div>
 <div id="resultMessage" class="result-message"></div><div id="villaGrid" class="villa-grid"></div>
 </section>
+<section class="stats">
+  <div><strong>100%</strong><span>Contact direct</span></div>
+  <div><strong>24/7</strong><span>Recherche en ligne</span></div>
+  <div><strong>SN</strong><span>Pensé pour le Sénégal</span></div>
+  <div><strong>1</strong><span>Plateforme simple</span></div>
+</section>
 <section class="how"><div class="section center"><div class="eyebrow">COMMENT ÇA MARCHE ?</div><h2>Louer une villa en 3 étapes</h2>
 <div class="steps"><div class="step"><div class="step-number">01</div><h3>Recherchez</h3><p>Choisissez votre ville, le nombre de chambres et votre budget.</p></div><div class="step"><div class="step-number">02</div><h3>Découvrez</h3><p>Consultez les photos, les informations et le prix de chaque villa.</p></div><div class="step"><div class="step-number">03</div><h3>Contactez</h3><p>Échangez directement avec le propriétaire pour organiser votre séjour.</p></div></div></div></section>
 <section id="proprietaires" class="owner-section"><div><div class="eyebrow">PROPRIÉTAIRES</div><h2>Vous avez une villa à louer ?</h2><p>Publiez votre annonce et présentez votre villa à de futurs locataires.</p></div><button id="openOwner" class="btn light">＋ Publier ma villa</button></section>
 <section id="apropos" class="section about"><div><div class="eyebrow">À PROPOS DE VILLALINK</div><h2>Le lien direct vers votre villa.</h2></div><div><p>VillaLink a pour ambition de simplifier la location de villas au Sénégal en rapprochant directement propriétaires et locataires.</p><p>Nous commençons à Saly et Mbour, avec l'objectif de construire progressivement une plateforme disponible dans tout le pays.</p></div></section>
 </main>
+<section class="final-cta">
+  <div>
+    <div class="eyebrow">VOTRE PROCHAINE LOCATION COMMENCE ICI</div>
+    <h2>Prêt à trouver votre villa ?</h2>
+    <p>Recherchez, comparez et contactez directement les propriétaires sur VillaLink.</p>
+  </div>
+  <a class="btn primary" href="#villas">Explorer les villas</a>
+</section>
 <footer id="contact"><div><a class="logo" href="#accueil"><span class="logo-mark">V</span><span>Villa<span>Link</span></span></a><p>Le lien direct vers votre villa.</p></div><div><h3>Navigation</h3><a href="#villas">Villas</a><a href="#proprietaires">Propriétaires</a><a href="#apropos">À propos</a></div><div><h3>Contact</h3><p>WhatsApp : +221 77 000 00 00</p><p>Email : contact@villalink.sn</p></div><div class="copyright">© 2026 VillaLink · Sénégal</div></footer>
 <div id="villaModal" class="modal hidden"><div class="modal-card"><button class="close" data-close>×</button><div id="modalContent"></div></div></div>
+<a class="floating-wa" href="https://wa.me/221770000000?text=Bonjour%20VillaLink%2C%20je%20souhaite%20avoir%20des%20informations." target="_blank" rel="noopener" aria-label="Contacter VillaLink sur WhatsApp">WhatsApp</a>
 <div id="ownerModal" class="modal hidden"><div class="modal-card"><button class="close" data-close>×</button><div class="eyebrow">NOUVELLE ANNONCE</div><h2>Publier une villa</h2><form id="ownerForm" class="owner-form"><input name="title" placeholder="Nom de la villa" required><input name="location" placeholder="Localisation, ex. Saly" required><input name="price" type="number" min="0" placeholder="Prix par nuit (FCFA)" required><input name="rooms" type="number" min="1" placeholder="Nombre de chambres" required><input name="phone" placeholder="Numéro WhatsApp" required><input name="image" placeholder="URL de la photo (optionnel)"><textarea name="description" rows="4" placeholder="Décrivez votre villa..." required></textarea><button class="btn primary" type="submit">Publier l'annonce</button></form><p class="note">Version prototype : l'annonce est enregistrée dans ce navigateur.</p></div></div>
 <script src="script.js"></script>
 </body>
