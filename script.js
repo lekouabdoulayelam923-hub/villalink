@@ -76,3 +76,196 @@ ownerForm.addEventListener("submit",e=>{
 updateOwnerPreview();
 document.getElementById("menuBtn").onclick=()=>document.querySelector(".header nav").classList.toggle("mobile-open");
 render();
+// ===============================
+// AUTHENTIFICATION VILLALINK
+// ===============================
+
+const authModal = document.getElementById("authModal");
+const authForm = document.getElementById("authForm");
+const authTitle = document.getElementById("authTitle");
+const authSubmit = document.getElementById("authSubmit");
+const authToggle = document.getElementById("authToggle");
+const authNameField = document.getElementById("authNameField");
+const closeAuth = document.getElementById("closeAuth");
+
+let authMode = "login";
+let authRole = "locataire";
+
+// Ouvrir connexion
+const openLogin = document.getElementById("openLogin");
+
+if (openLogin) {
+  openLogin.addEventListener("click", () => {
+    authMode = "login";
+    updateAuth();
+    authModal.classList.remove("hidden");
+  });
+}
+
+// Ouvrir inscription
+const openSignup = document.getElementById("openSignup");
+
+if (openSignup) {
+  openSignup.addEventListener("click", () => {
+    authMode = "signup";
+    updateAuth();
+    authModal.classList.remove("hidden");
+  });
+}
+
+// Fermer
+if (closeAuth) {
+  closeAuth.addEventListener("click", () => {
+    authModal.classList.add("hidden");
+  });
+}
+
+// Choix Locataire / Propriétaire
+document.querySelectorAll(".role").forEach(button => {
+  button.addEventListener("click", () => {
+
+    document.querySelectorAll(".role").forEach(btn => {
+      btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    authRole = button.dataset.role;
+  });
+});
+
+// Modifier l'affichage connexion / inscription
+function updateAuth() {
+
+  const inscription = authMode === "signup";
+
+  authTitle.textContent = inscription
+    ? "Créer un compte"
+    : "Se connecter";
+
+  authSubmit.textContent = inscription
+    ? "Créer mon compte"
+    : "Se connecter";
+
+  authToggle.textContent = inscription
+    ? "J’ai déjà un compte → Se connecter"
+    : "Pas encore de compte → Créer un compte";
+
+  if (authNameField) {
+    authNameField.style.display = inscription ? "grid" : "none";
+  }
+}
+
+// Passer de connexion à inscription
+if (authToggle) {
+  authToggle.addEventListener("click", () => {
+
+    authMode = authMode === "login"
+      ? "signup"
+      : "login";
+
+    updateAuth();
+  });
+}
+
+// Traitement du formulaire
+if (authForm) {
+
+  authForm.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    const formData = new FormData(authForm);
+
+    const name = formData.get("name") || "";
+    const email = formData.get("email");
+    const password = formData.get("password");
+
+    let accounts = [];
+
+    try {
+      accounts = JSON.parse(
+        localStorage.getItem("villalink_accounts") || "[]"
+      );
+    } catch (error) {
+      accounts = [];
+    }
+
+    // CRÉATION DE COMPTE
+    if (authMode === "signup") {
+
+      const exists = accounts.some(
+        account =>
+          account.email.toLowerCase() === email.toLowerCase()
+      );
+
+      if (exists) {
+        alert("Un compte existe déjà avec cet email.");
+        return;
+      }
+
+      const account = {
+        name: name,
+        email: email,
+        password: password,
+        role: authRole
+      };
+
+      accounts.push(account);
+
+      localStorage.setItem(
+        "villalink_accounts",
+        JSON.stringify(accounts)
+      );
+
+      localStorage.setItem(
+        "villalink_session",
+        JSON.stringify({
+          name: name,
+          email: email,
+          role: authRole
+        })
+      );
+
+      alert("🎉 Compte VillaLink créé avec succès !");
+
+    }
+
+    // CONNEXION
+    else {
+
+      const account = accounts.find(
+        account =>
+          account.email.toLowerCase() === email.toLowerCase() &&
+          account.password === password
+      );
+
+      if (!account) {
+        alert("❌ Email ou mot de passe incorrect.");
+        return;
+      }
+
+      localStorage.setItem(
+        "villalink_session",
+        JSON.stringify({
+          name: account.name,
+          email: account.email,
+          role: account.role
+        })
+      );
+
+      alert(
+        "👋 Bienvenue sur VillaLink, " +
+        account.name +
+        " !"
+      );
+    }
+
+    authForm.reset();
+    authModal.classList.add("hidden");
+
+  });
+}
+
+// Initialiser l'affichage
+updateAuth();
