@@ -269,3 +269,76 @@ if (authForm) {
 
 // Initialiser l'affichage
 updateAuth();
+
+
+/* ===============================
+   TABLEAU DE BORD
+   =============================== */
+const dashboard = document.getElementById("dashboard");
+const dashboardName = document.getElementById("dashboardName");
+const dashboardRole = document.getElementById("dashboardRole");
+const logoutBtn = document.getElementById("logoutBtn");
+const myVillasBtn = document.getElementById("myVillasBtn");
+
+function showDashboard(session){
+  if(!dashboard || !session) return;
+  dashboard.classList.remove("hidden");
+  dashboardName.textContent = session.name || "Utilisateur";
+  const owner = session.role === "proprietaire";
+  dashboardRole.textContent = owner ? "🏠 Propriétaire" : "👤 Locataire";
+  document.querySelectorAll(".owner-only").forEach(el => {
+    el.style.display = owner ? "" : "none";
+  });
+  dashboard.scrollIntoView({behavior:"smooth", block:"start"});
+  const loginButton=document.getElementById("openLogin");
+  const signupButton=document.getElementById("openSignup");
+  if(loginButton) loginButton.textContent="Mon espace";
+  if(signupButton) signupButton.style.display="none";
+  if(loginButton) loginButton.onclick=()=>dashboard.scrollIntoView({behavior:"smooth"});
+}
+
+function hideDashboard(){
+  if(dashboard) dashboard.classList.add("hidden");
+  const loginButton=document.getElementById("openLogin");
+  const signupButton=document.getElementById("openSignup");
+  if(loginButton) loginButton.textContent="Se connecter";
+  if(loginButton) loginButton.onclick=null;
+  if(signupButton) signupButton.style.display="";
+}
+
+if(logoutBtn){
+  logoutBtn.addEventListener("click",()=>{
+    localStorage.removeItem("villalink_session");
+    hideDashboard();
+    alert("Vous êtes déconnecté de VillaLink.");
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+}
+
+if(myVillasBtn){
+  myVillasBtn.addEventListener("click",()=>{
+    const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
+    const villas=getCustom();
+    const mine=villas.filter(v=>v.ownerEmail===session?.email);
+    if(!mine.length){
+      alert("Vous n'avez pas encore publié de villa. Cliquez sur « Propriétaires » pour créer votre première annonce.");
+      return;
+    }
+    document.getElementById("villas")?.scrollIntoView({behavior:"smooth"});
+  });
+}
+
+document.getElementById("favoritesBtn")?.addEventListener("click",()=>{
+  alert("Les favoris seront disponibles dans la prochaine version de VillaLink.");
+});
+document.getElementById("searchesBtn")?.addEventListener("click",()=>{
+  document.getElementById("villas")?.scrollIntoView({behavior:"smooth"});
+});
+
+function restoreSession(){
+  try{
+    const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
+    if(session) showDashboard(session);
+  }catch(e){}
+}
+restoreSession();
