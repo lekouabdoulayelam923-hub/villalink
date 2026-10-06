@@ -195,7 +195,7 @@ function showDashboard(session){
 function hideDashboard(){
   if(dashboard)dashboard.classList.add("hidden");myVillasPanel?.classList.add("hidden");favoritesPanel?.classList.add("hidden");
   const loginButton=document.getElementById("openLogin"),signupButton=document.getElementById("openSignup");
-  if(loginButton)loginButton.textContent="Se connecter";if(loginButton)loginButton.onclick=null;if(signupButton)signupButton.style.display="";
+  if(loginButton)loginButton.textContent="Se connecter";if(signupButton)signupButton.style.display="";bindAuthButtons();
 }
 if(logoutBtn)logoutBtn.addEventListener("click",()=>{localStorage.removeItem("villalink_session");hideDashboard();alert("Vous êtes déconnecté de VillaLink.");window.scrollTo({top:0,behavior:"smooth"})});
 const favoritesPanel=document.getElementById("favoritesPanel"),favoritesGrid=document.getElementById("favoritesGrid"),closeFavorites=document.getElementById("closeFavorites"),myVillasPanel=document.getElementById("myVillasPanel"),myVillasGrid=document.getElementById("myVillasGrid"),closeMyVillas=document.getElementById("closeMyVillas");
@@ -226,6 +226,7 @@ function editMyVilla(id){
   updateOwnerPreview();
 }
 
+document.getElementById("cancelVillaEdit")?.addEventListener("click",cancelVillaEdit);
 function cancelVillaEdit(){
   const form=document.getElementById("ownerForm");
   if(!form)return;
