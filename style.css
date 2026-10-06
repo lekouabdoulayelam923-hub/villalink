@@ -106,3 +106,10 @@
   .gallery-main{height:250px}
   .gallery-thumbs{grid-template-columns:repeat(3,1fr)}
 }
+
+/* Gestion des annonces propriétaire */
+.my-villa-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.my-villa-actions .btn{font-size:13px;padding:9px 12px}
+.btn.danger{border:1px solid #dc3545;color:#dc3545;background:#fff}
+.btn.danger:hover{background:#dc3545;color:#fff}
+@media(max-width:620px){.my-villa-actions .btn{flex:1;min-width:110px}}
