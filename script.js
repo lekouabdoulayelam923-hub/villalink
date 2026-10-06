@@ -40,7 +40,7 @@ function openVilla(id){
  villaModal.classList.remove("hidden")
 }
 function applyFilters(){const loc=document.getElementById("locationInput").value.trim().toLowerCase(),rooms=Number(document.getElementById("roomsInput").value||0),max=Number(document.getElementById("priceInput").value||0);render(allVillas().filter(v=>(!loc||v.location.toLowerCase().includes(loc))&&(!rooms||v.rooms>=rooms)&&(!max||v.price<=max)))}
-document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();applyFilters();document.getElementById("villas").scrollIntoView({behavior:"smooth"})});
+document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();saveSearch();applyFilters();document.getElementById("villas").scrollIntoView({behavior:"smooth"})});
 document.querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));btn.classList.add("active");const city=btn.dataset.city;render(city?allVillas().filter(v=>v.location===city):allVillas());document.getElementById("villas").scrollIntoView({behavior:"smooth",block:"start"})}));
 document.getElementById("resetSearch").onclick=()=>{document.getElementById("searchForm").reset();document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));document.querySelector('.filter[data-city=""]').classList.add("active");render()};
 document.getElementById("openOwner").onclick=()=>ownerModal.classList.remove("hidden");
@@ -343,7 +343,63 @@ function showFavorites(){
  myVillasPanel?.classList.add("hidden");favoritesPanel?.classList.remove("hidden");favoritesPanel?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 document.getElementById("favoritesBtn")?.addEventListener("click",showFavorites);if(closeFavorites)closeFavorites.addEventListener("click",()=>favoritesPanel?.classList.add("hidden"));
-document.getElementById("searchesBtn")?.addEventListener("click",()=>{document.getElementById("villas")?.scrollIntoView({behavior:"smooth"})});
+function getSearchHistory(){
+ const s=JSON.parse(localStorage.getItem("villalink_session")||"null");
+ if(!s?.email)return [];
+ try{const a=JSON.parse(localStorage.getItem("villalink_searches")||"{}");return Array.isArray(a[s.email])?a[s.email]:[]}catch(e){return []}
+}
+function saveSearch(){
+ const s=JSON.parse(localStorage.getItem("villalink_session")||"null");
+ if(!s?.email)return;
+ const location=document.getElementById("locationInput")?.value.trim()||"";
+ const rooms=document.getElementById("roomsInput")?.value||"";
+ const max=document.getElementById("priceInput")?.value||"";
+ if(!location&&!rooms&&!max)return;
+ let all={};
+ try{all=JSON.parse(localStorage.getItem("villalink_searches")||"{}")}catch(e){}
+ const list=Array.isArray(all[s.email])?all[s.email]:[];
+ const item={id:Date.now(),location,rooms,max,date:new Date().toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})};
+ const key=JSON.stringify({location,rooms,max});
+ const filtered=list.filter(x=>JSON.stringify({location:x.location||"",rooms:x.rooms||"",max:x.max||""})!==key);
+ all[s.email]=[item,...filtered].slice(0,10);
+ localStorage.setItem("villalink_searches",JSON.stringify(all));
+}
+function deleteSearch(id){
+ const s=JSON.parse(localStorage.getItem("villalink_session")||"null");if(!s?.email)return;
+ let all={};try{all=JSON.parse(localStorage.getItem("villalink_searches")||"{}")}catch(e){}
+ all[s.email]=getSearchHistory().filter(x=>Number(x.id)!==Number(id));
+ localStorage.setItem("villalink_searches",JSON.stringify(all));showSearches();
+}
+function showSearches(){
+ const s=JSON.parse(localStorage.getItem("villalink_session")||"null");
+ if(!s?.email){alert("Connectez-vous pour voir vos recherches.");return}
+ const panel=document.getElementById("searchesPanel"),grid=document.getElementById("searchesGrid");
+ if(!panel||!grid)return;
+ const list=getSearchHistory();
+ if(!list.length){
+   grid.innerHTML='<div class="empty-searches"><div>🔎</div><h3>Aucune recherche enregistrée</h3><p>Faites une recherche de villa et elle apparaîtra ici.</p><a class="btn primary" href="#villas">Rechercher une villa</a></div>';
+ }else{
+   grid.innerHTML=list.map(x=>{
+     const parts=[];
+     if(x.location)parts.push("📍 "+safe(x.location));
+     if(x.rooms)parts.push("🛏 "+safe(x.rooms)+"+ chambres");
+     if(x.max)parts.push("💰 jusqu’à "+price(x.max));
+     return '<article class="search-history-card"><div><div class="eyebrow">Recherche du '+safe(x.date||"")+'</div><h4>'+safe(parts.join(" · "))+'</h4></div><div class="search-history-actions"><button class="btn primary" data-reuse-search="'+x.id+'">Refaire la recherche</button><button class="btn outline" data-delete-search="'+x.id+'">Supprimer</button></div></article>';
+   }).join("");
+   grid.querySelectorAll("[data-reuse-search]").forEach(b=>b.onclick=()=>{
+     const x=list.find(v=>Number(v.id)===Number(b.dataset.reuseSearch));if(!x)return;
+     document.getElementById("locationInput").value=x.location||"";
+     document.getElementById("roomsInput").value=x.rooms||"";
+     document.getElementById("priceInput").value=x.max||"";
+     applyFilters();panel.classList.add("hidden");document.getElementById("villas")?.scrollIntoView({behavior:"smooth",block:"start"});
+   });
+   grid.querySelectorAll("[data-delete-search]").forEach(b=>b.onclick=()=>deleteSearch(Number(b.dataset.deleteSearch)));
+ }
+ document.getElementById("favoritesPanel")?.classList.add("hidden");
+ document.getElementById("myVillasPanel")?.classList.add("hidden");
+ panel.classList.remove("hidden");panel.scrollIntoView({behavior:"smooth",block:"start"});
+}
+document.getElementById("searchesBtn")?.addEventListener("click",showSearches);document.getElementById("closeSearches")?.addEventListener("click",()=>document.getElementById("searchesPanel")?.classList.add("hidden"));
 function restoreSession(){try{const session=JSON.parse(localStorage.getItem("villalink_session")||"null");if(session)showDashboard(session)}catch(e){}}
 restoreSession();
 
