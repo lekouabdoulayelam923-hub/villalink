@@ -11,11 +11,14 @@ function getCustom(){try{return JSON.parse(localStorage.getItem("villalink_villa
 function allVillas(){return [...DEFAULT_VILLAS,...getCustom()]}
 function price(n){return new Intl.NumberFormat("fr-FR").format(Number(n))+" FCFA / nuit"}
 function safe(v){return String(v??"").replace(/[&<>"']/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[x]))}
-function render(list=allVillas()){
+function getFavorites(){const s=JSON.parse(localStorage.getItem("villalink_session")||"null");if(!s?.email)return [];try{const a=JSON.parse(localStorage.getItem("villalink_favorites")||"{}");return Array.isArray(a[s.email])?a[s.email].map(Number):[]}catch(e){return []}}
+function saveFavorites(ids){const s=JSON.parse(localStorage.getItem("villalink_session")||"null");if(!s?.email)return;let a={};try{a=JSON.parse(localStorage.getItem("villalink_favorites")||"{}")}catch(e){}a[s.email]=ids.map(Number);localStorage.setItem("villalink_favorites",JSON.stringify(a))}
+function toggleFavorite(id){const s=JSON.parse(localStorage.getItem("villalink_session")||"null");if(!s?.email){alert("Connectez-vous pour utiliser les favoris.");return}const ids=getFavorites();saveFavorites(ids.includes(Number(id))?ids.filter(x=>x!==Number(id)):[...ids,Number(id)]);render()}
+function render(list=allVillas(){
 grid.innerHTML="";message.textContent=`${list.length} villa${list.length>1?"s":""} disponible${list.length>1?"s":""}.`;
 if(!list.length){grid.innerHTML='<div class="empty"><h3>Aucune villa trouvée</h3><p>Essayez une autre ville ou un autre budget.</p></div>';return}
 list.forEach(v=>{const el=document.createElement("article");el.className="card";el.innerHTML=`<div class="card-img" style="background-image:url('${safe(v.image)}')"><span class="badge">✓ Disponible</span><span class="city-badge">${safe(v.location)}</span></div><div class="card-body"><h3>${safe(v.title)}</h3><p class="meta">📍 ${safe(v.location)} · 🛏 ${safe(v.rooms)} chambres</p><div class="amenities">${(v.amenities||[]).slice(0,3).map(a=>`<span>${safe(a)}</span>`).join("")}</div><span class="price">${price(v.price)}</span><div class="card-bottom"><button class="btn outline" data-view="${v.id}">Voir détails</button><a class="btn primary" target="_blank" rel="noopener" href="https://wa.me/${safe(v.phone)}?text=${encodeURIComponent("Bonjour, je suis intéressé(e) par "+v.title+" sur VillaLink.")}">WhatsApp</a></div></div>`;grid.appendChild(el)});
-grid.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>openVilla(Number(b.dataset.view)))}
+grid.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>openVilla(Number(b.dataset.view)));grid.querySelectorAll("[data-favorite]").forEach(b=>b.onclick=()=>toggleFavorite(Number(b.dataset.favorite)))}
 function openVilla(id){const v=allVillas().find(x=>x.id===id);if(!v)return;modalContent.innerHTML=`<div class="modal-image" style="background-image:url('${safe(v.image)}')"></div><div class="eyebrow">${safe(v.location)} · ${safe(v.rooms)} chambres</div><h2>${safe(v.title)}</h2><p class="modal-price">${price(v.price)}</p><div class="modal-amenities">${(v.amenities||[]).map(a=>`<span>✓ ${safe(a)}</span>`).join("")}</div><p style="margin-top:16px">${safe(v.description)}</p><a class="btn primary" style="margin-top:22px" target="_blank" rel="noopener" href="https://wa.me/${safe(v.phone)}?text=${encodeURIComponent("Bonjour, je suis intéressé(e) par "+v.title+" sur VillaLink.")}">Contacter le propriétaire</a>`;villaModal.classList.remove("hidden")}
 function applyFilters(){const loc=document.getElementById("locationInput").value.trim().toLowerCase(),rooms=Number(document.getElementById("roomsInput").value||0),max=Number(document.getElementById("priceInput").value||0);render(allVillas().filter(v=>(!loc||v.location.toLowerCase().includes(loc))&&(!rooms||v.rooms>=rooms)&&(!max||v.price<=max)))}
 document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();applyFilters();document.getElementById("villas").scrollIntoView({behavior:"smooth"})});
@@ -305,7 +308,7 @@ function showDashboard(session){
 }
 
 function hideDashboard(){
-  if(dashboard) dashboard.classList.add("hidden");
+  if(dashboard) dashboard.classList.add("hidden");myVillasPanel?.classList.add("hidden");favoritesPanel?.classList.add("hidden");
   const loginButton=document.getElementById("openLogin");
   const signupButton=document.getElementById("openSignup");
   if(loginButton) loginButton.textContent="Se connecter";
@@ -322,11 +325,12 @@ if(logoutBtn){
   });
 }
 
-const myVillasPanel=document.getElementById("myVillasPanel");
+const favoritesPanel=document.getElementById("favoritesPanel");const favoritesGrid=document.getElementById("favoritesGrid");const closeFavorites=document.getElementById("closeFavorites");const myVillasPanel=document.getElementById("myVillasPanel");
 const myVillasGrid=document.getElementById("myVillasGrid");
 const closeMyVillas=document.getElementById("closeMyVillas");
 
 function showMyVillas(){
+ favoritesPanel?.classList.add("hidden");
   const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
   if(!session || session.role!=="proprietaire") return;
   const mine=getCustom().filter(v=>String(v.ownerEmail||"").toLowerCase()===String(session.email||"").toLowerCase());
@@ -362,9 +366,15 @@ if(closeMyVillas){
   closeMyVillas.addEventListener("click",()=>myVillasPanel?.classList.add("hidden"));
 }
 
-document.getElementById("favoritesBtn")?.addEventListener("click",()=>{
-  alert("Les favoris seront disponibles dans la prochaine version de VillaLink.");
-});
+function showFavorites(){
+ const s=JSON.parse(localStorage.getItem("villalink_session")||"null");if(!s?.email){alert("Connectez-vous pour utiliser vos favoris.");return}
+ const ids=getFavorites();const mine=allVillas().filter(v=>ids.includes(Number(v.id)));
+ if(favoritesGrid){favoritesGrid.innerHTML="";if(!mine.length){favoritesGrid.innerHTML='<div class="empty-favorites"><div>❤️</div><h3>Aucun favori pour le moment</h3><p>Cliquez sur le cœur d’une villa pour la retrouver ici.</p><a class="btn primary" href="#villas">Découvrir les villas</a></div>'}else{mine.forEach(v=>{const el=document.createElement("article");el.className="my-villa-card";el.innerHTML='<div class="my-villa-img" style="background-image:url(\''+safe(v.image)+'\')"></div><div class="my-villa-body"><div class="eyebrow">'+safe(v.location)+'</div><h4>'+safe(v.title)+'</h4><p>🛏 '+safe(v.rooms)+' chambres · '+price(v.price)+'</p><div class="amenities">'+(v.amenities||[]).slice(0,3).map(a=>'<span>'+safe(a)+'</span>').join("")+'</div><div class="favorite-actions"><button class="btn outline" data-favorite-view="'+v.id+'">Voir l’annonce</button><button class="btn favorite-remove" data-remove-favorite="'+v.id+'">Retirer ❤️</button></div></div>';favoritesGrid.appendChild(el)})}
+  favoritesGrid.querySelectorAll("[data-favorite-view]").forEach(b=>b.onclick=()=>openVilla(Number(b.dataset.favoriteView)));favoritesGrid.querySelectorAll("[data-remove-favorite]").forEach(b=>b.onclick=()=>{saveFavorites(getFavorites().filter(id=>id!==Number(b.dataset.removeFavorite)));showFavorites();render()})
+ }
+ myVillasPanel?.classList.add("hidden");favoritesPanel?.classList.remove("hidden");favoritesPanel?.scrollIntoView({behavior:"smooth",block:"start"});
+}
+document.getElementById("favoritesBtn")?.addEventListener("click",showFavorites);if(closeFavorites)closeFavorites.addEventListener("click",()=>favoritesPanel?.classList.add("hidden"));
 document.getElementById("searchesBtn")?.addEventListener("click",()=>{
   document.getElementById("villas")?.scrollIntoView({behavior:"smooth"});
 });
