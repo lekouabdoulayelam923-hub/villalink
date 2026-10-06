@@ -322,17 +322,44 @@ if(logoutBtn){
   });
 }
 
+const myVillasPanel=document.getElementById("myVillasPanel");
+const myVillasGrid=document.getElementById("myVillasGrid");
+const closeMyVillas=document.getElementById("closeMyVillas");
+
+function showMyVillas(){
+  const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
+  if(!session || session.role!=="proprietaire") return;
+  const mine=getCustom().filter(v=>String(v.ownerEmail||"").toLowerCase()===String(session.email||"").toLowerCase());
+  if(!mine.length){
+    if(myVillasPanel) myVillasPanel.classList.add("hidden");
+    alert("Vous n'avez pas encore publié de villa. Cliquez sur « Propriétaires » pour créer votre première annonce.");
+    return;
+  }
+  if(myVillasGrid){
+    myVillasGrid.innerHTML=mine.map(v=>`
+      <article class="my-villa-card">
+        <div class="my-villa-img" style="background-image:url('${safe(v.image)}')"></div>
+        <div class="my-villa-body">
+          <div class="eyebrow">${safe(v.location)}</div>
+          <h4>${safe(v.title)}</h4>
+          <p>🛏 ${safe(v.rooms)} chambres · ${price(v.price)}</p>
+          <div class="amenities">${(v.amenities||[]).slice(0,3).map(a=>`<span>${safe(a)}</span>`).join("")}</div>
+          <button class="btn outline" data-my-villa="${v.id}">Voir l'annonce</button>
+        </div>
+      </article>`).join("");
+    myVillasGrid.querySelectorAll("[data-my-villa]").forEach(btn=>{
+      btn.addEventListener("click",()=>openVilla(Number(btn.dataset.myVilla)));
+    });
+  }
+  myVillasPanel?.classList.remove("hidden");
+  myVillasPanel?.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
 if(myVillasBtn){
-  myVillasBtn.addEventListener("click",()=>{
-    const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
-    const villas=getCustom();
-    const mine=villas.filter(v=>v.ownerEmail===session?.email);
-    if(!mine.length){
-      alert("Vous n'avez pas encore publié de villa. Cliquez sur « Propriétaires » pour créer votre première annonce.");
-      return;
-    }
-    document.getElementById("villas")?.scrollIntoView({behavior:"smooth"});
-  });
+  myVillasBtn.addEventListener("click",showMyVillas);
+}
+if(closeMyVillas){
+  closeMyVillas.addEventListener("click",()=>myVillasPanel?.classList.add("hidden"));
 }
 
 document.getElementById("favoritesBtn")?.addEventListener("click",()=>{
