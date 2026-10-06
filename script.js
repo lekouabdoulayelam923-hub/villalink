@@ -351,11 +351,23 @@ document.getElementById("searchesBtn")?.addEventListener("click",()=>{document.g
 function restoreSession(){try{const session=JSON.parse(localStorage.getItem("villalink_session")||"null");if(session)showDashboard(session)}catch(e){}}
 restoreSession();
 
-// Sécurisation des boutons de connexion / inscription
+// Connexion / inscription : gestion centralisée et fiable
 function bindAuthButtons(){
   const login=document.getElementById("openLogin");
   const signup=document.getElementById("openSignup");
-  if(login) login.onclick=()=>{authMode="login";updateAuth();authModal?.classList.remove("hidden")};
-  if(signup) signup.onclick=()=>{authMode="signup";updateAuth();authModal?.classList.remove("hidden")};
+  if(login){
+    login.onclick=null;
+    login.addEventListener("click",function(){
+      const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
+      if(session){showDashboard(session);return}
+      authMode="login"; updateAuth(); authModal?.classList.remove("hidden");
+    });
+  }
+  if(signup){
+    signup.onclick=null;
+    signup.addEventListener("click",function(){
+      authMode="signup"; updateAuth(); authModal?.classList.remove("hidden");
+    });
+  }
 }
 bindAuthButtons();
