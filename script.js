@@ -24,6 +24,24 @@ document.getElementById("resetSearch").onclick=()=>{document.getElementById("sea
 document.getElementById("openOwner").onclick=()=>ownerModal.classList.remove("hidden");
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>{villaModal.classList.add("hidden");ownerModal.classList.add("hidden")});
 document.querySelectorAll(".modal").forEach(m=>m.onclick=e=>{if(e.target===m)m.classList.add("hidden")});
-document.getElementById("ownerForm").addEventListener("submit",e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target).entries()),v={id:Date.now(),title:d.title,location:d.location,price:Number(d.price),rooms:Number(d.rooms),phone:d.phone.replace(/\D/g,""),image:d.image||DEFAULT_VILLAS[0].image,description:d.description,amenities:["Nouvelle annonce"]};const custom=getCustom();custom.push(v);localStorage.setItem("villalink_villas",JSON.stringify(custom));render();e.target.reset();ownerModal.classList.add("hidden");document.getElementById("villas").scrollIntoView({behavior:"smooth"});alert("Annonce ajoutée à votre prototype VillaLink.")});
+const ownerForm=document.getElementById("ownerForm");
+const ownerPreview=document.getElementById("ownerPreview");
+function updateOwnerPreview(){
+ const d=Object.fromEntries(new FormData(ownerForm).entries());
+ const amenities=[...ownerForm.querySelectorAll('input[name="amenity"]:checked')].map(x=>x.value);
+ const image=d.image||DEFAULT_VILLAS[0].image;
+ ownerPreview.innerHTML=`<div class="preview-card"><div class="preview-card-img" style="background-image:url('${safe(image)}')"></div><div class="preview-card-body"><div class="eyebrow">APERÇU</div><h3>${safe(d.title||"Nom de votre villa")}</h3><p>📍 ${safe(d.location||"Votre localisation")} · 🛏 ${safe(d.rooms||"—")} chambres</p><strong class="price">${d.price?price(d.price):"Prix à renseigner"}</strong><div class="amenities">${amenities.map(a=>`<span>${safe(a)}</span>`).join("")}</div></div></div>`;
+}
+ownerForm.addEventListener("input",updateOwnerPreview);
+ownerForm.addEventListener("change",updateOwnerPreview);
+ownerForm.addEventListener("submit",e=>{
+ e.preventDefault();
+ const d=Object.fromEntries(new FormData(e.target).entries());
+ const amenities=[...e.target.querySelectorAll('input[name="amenity"]:checked')].map(x=>x.value);
+ const v={id:Date.now(),title:d.title,location:d.location,price:Number(d.price),rooms:Number(d.rooms),phone:d.phone.replace(/\D/g,""),image:d.image||DEFAULT_VILLAS[0].image,description:d.description,amenities:amenities.length?amenities:["Nouvelle annonce"]};
+ const custom=getCustom();custom.push(v);localStorage.setItem("villalink_villas",JSON.stringify(custom));
+ render();e.target.reset();updateOwnerPreview();ownerModal.classList.add("hidden");document.getElementById("villas").scrollIntoView({behavior:"smooth"});alert("Votre annonce a été ajoutée au prototype VillaLink.");
+});
+updateOwnerPreview();
 document.getElementById("menuBtn").onclick=()=>document.querySelector(".header nav").classList.toggle("mobile-open");
 render();
