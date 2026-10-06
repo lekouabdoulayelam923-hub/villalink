@@ -99,8 +99,19 @@ ownerForm.addEventListener("submit",e=>{
  const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
  const images=selectedPhotoDataList.length?[...selectedPhotoDataList]:[d.image||DEFAULT_VILLAS[0].image];
  const v={id:Date.now(),title:d.title,location:d.location,price:Number(d.price),rooms:Number(d.rooms),phone:d.phone.replace(/\D/g,""),image:images[0],images:images,description:d.description,amenities:amenities.length?amenities:["Nouvelle annonce"],ownerEmail:session?.email||"",ownerName:session?.name||""};
- const custom=getCustom();custom.push(v);try{localStorage.setItem("villalink_villas",JSON.stringify(custom))}catch(err){alert("Les photos prennent trop de place. Choisis 2 ou 3 photos et réessaie.");console.error(err);return}
- render();e.target.reset();selectedPhotoData="";selectedPhotoDataList=[];photoPreview.innerHTML="";updateOwnerPreview();ownerModal.classList.add("hidden");document.getElementById("villas").scrollIntoView({behavior:"smooth"});alert("Votre annonce a été ajoutée avec "+images.length+" photo"+(images.length>1?"s":"")+" !");
+ const custom=getCustom();
+ const editingId=e.target.dataset.editingId;
+ if(editingId){
+   const index=custom.findIndex(x=>Number(x.id)===Number(editingId)&&String(x.ownerEmail||"").toLowerCase()===String(session?.email||"").toLowerCase());
+   if(index>=0) custom[index]=v;
+ }else{
+   custom.push(v);
+ }
+ try{localStorage.setItem("villalink_villas",JSON.stringify(custom))}catch(err){alert("Les photos prennent trop de place. Choisis 2 ou 3 photos et réessaie.");console.error(err);return}
+ const wasEditing=!!editingId;
+ delete e.target.dataset.editingId;
+ render();e.target.reset();selectedPhotoData="";selectedPhotoDataList=[];photoPreview.innerHTML="";updateOwnerPreview();ownerModal.classList.add("hidden");document.getElementById("villas").scrollIntoView({behavior:"smooth"});
+ alert(wasEditing?"Votre annonce a été modifiée avec succès !":"Votre annonce a été ajoutée avec "+images.length+" photo"+(images.length>1?"s":"")+" !");
 });
 updateOwnerPreview();
 document.getElementById("menuBtn").onclick=()=>document.querySelector(".header nav").classList.toggle("mobile-open");
