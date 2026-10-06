@@ -115,3 +115,18 @@
 @media(max-width:620px){.my-villa-actions .btn{flex:1;min-width:110px}}
 
 .listing-status{display:inline-block;margin-top:12px;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;background:#e8f7ee;color:#18794e}.status-attente{background:#fff4db;color:#9a6700}.status-refuse{background:#fde8e8;color:#b42318}
+
+/* ADMINISTRATION */
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.admin-stats>div{background:#f7faf9;border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.admin-stats strong{display:block;font-size:22px;color:var(--navy)}
+.admin-stats span{font-size:11px;color:var(--muted);font-weight:800}
+.admin-grid{display:grid;gap:16px}
+.admin-card{display:grid;grid-template-columns:150px 1fr;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+.admin-img{min-height:170px;background:center/cover}
+.admin-body{padding:18px}
+.admin-body h4{font-size:20px;color:var(--navy);margin:4px 0}
+.admin-body p{font-size:13px;color:var(--muted);margin:3px 0}
+.admin-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+.admin-actions .btn{font-size:12px;padding:9px 11px}
+@media(max-width:620px){.admin-stats{grid-template-columns:1fr 1fr}.admin-card{grid-template-columns:1fr}.admin-img{min-height:190px}}
