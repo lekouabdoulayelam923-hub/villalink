@@ -125,7 +125,7 @@ const authForm = document.getElementById("authForm");
 const authTitle = document.getElementById("authTitle");
 const authSubmit = document.getElementById("authSubmit");
 const authToggle = document.getElementById("authToggle");
-const authNameField = document.getElementById("authNameField");
+const authNameField = document.getElementById("authName");
 const closeAuth = document.getElementById("closeAuth");
 
 let authMode = "login";
@@ -151,7 +151,7 @@ function updateAuth() {
   authTitle.textContent = inscription ? "Créer un compte" : "Se connecter";
   authSubmit.textContent = inscription ? "Créer mon compte" : "Se connecter";
   authToggle.textContent = inscription ? "J’ai déjà un compte → Se connecter" : "Pas encore de compte → Créer un compte";
-  if (authNameField) authNameField.style.display = inscription ? "grid" : "none";
+  if (authNameField) { authNameField.style.display = inscription ? "" : "none"; authNameField.required = inscription; }
 }
 if (authToggle) authToggle.addEventListener("click", () => { authMode = authMode === "login" ? "signup" : "login"; updateAuth(); });
 if (authForm) {
@@ -294,3 +294,12 @@ document.getElementById("favoritesBtn")?.addEventListener("click",showFavorites)
 document.getElementById("searchesBtn")?.addEventListener("click",()=>{document.getElementById("villas")?.scrollIntoView({behavior:"smooth"})});
 function restoreSession(){try{const session=JSON.parse(localStorage.getItem("villalink_session")||"null");if(session)showDashboard(session)}catch(e){}}
 restoreSession();
+
+// Sécurisation des boutons de connexion / inscription
+function bindAuthButtons(){
+  const login=document.getElementById("openLogin");
+  const signup=document.getElementById("openSignup");
+  if(login) login.onclick=()=>{authMode="login";updateAuth();authModal?.classList.remove("hidden")};
+  if(signup) signup.onclick=()=>{authMode="signup";updateAuth();authModal?.classList.remove("hidden")};
+}
+bindAuthButtons();
