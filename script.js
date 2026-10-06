@@ -144,6 +144,7 @@ document.querySelectorAll(".role").forEach(button => {
     document.querySelectorAll(".role").forEach(btn => btn.classList.remove("active"));
     button.classList.add("active");
     authRole = button.dataset.role;
+    updateAuth();
   });
 });
 function updateAuth() {
@@ -151,7 +152,7 @@ function updateAuth() {
   authTitle.textContent = inscription ? (authRole==="admin" ? "Créer un compte administrateur (test)" : "Créer un compte") : "Se connecter";
   authSubmit.textContent = inscription ? "Créer mon compte" : "Se connecter";
   authToggle.textContent = inscription ? "J’ai déjà un compte → Se connecter" : "Pas encore de compte → Créer un compte";
-  if (authNameField) { authNameField.style.display = inscription ? "" : "none"; authNameField.required = inscription; }
+  if (authNameField) { authNameField.style.display = inscription ? "" : "none"; authNameField.required = inscription; authNameField.disabled = !inscription; }
 }
 if (authToggle) authToggle.addEventListener("click", () => { authMode = authMode === "login" ? "signup" : "login"; updateAuth(); });
 if (authForm) {
