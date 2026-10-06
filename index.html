@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="VillaLink - Trouvez et contactez directement des propriétaires de villas au Sénégal.">
+  <title>VillaLink — Le lien direct vers votre villa</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <a class="logo" href="#accueil" aria-label="VillaLink accueil">
+      <span class="logo-mark">V</span>
+      <span>Villa<span>Link</span></span>
+    </a>
+    <nav>
+      <a href="#accueil">Accueil</a>
+      <a href="#villas">Villas</a>
+      <a href="#proprietaires">Propriétaires</a>
+      <a href="#apropos">À propos</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="menu-btn" aria-label="Ouvrir le menu">☰</button>
+  </header>
+
+  <main>
+    <section id="accueil" class="hero">
+      <div class="hero-content">
+        <p class="eyebrow">LOCATION DE VILLAS AU SÉNÉGAL 🇸🇳</p>
+        <h1>Trouvez la villa idéale,<br><span>en toute simplicité.</span></h1>
+        <p class="hero-text">VillaLink met en relation locataires et propriétaires pour faciliter la recherche de villas à Saly, Mbour et partout au Sénégal.</p>
+
+        <form id="searchForm" class="search-box">
+          <label>📍 Localisation
+            <input id="locationInput" type="text" placeholder="Saly, Mbour, Dakar...">
+          </label>
+          <label>🛏 Chambres
+            <select id="roomsInput">
+              <option value="">Toutes</option>
+              <option value="2">2+</option>
+              <option value="3">3+</option>
+              <option value="4">4+</option>
+              <option value="5">5+</option>
+            </select>
+          </label>
+          <label>💰 Prix max
+            <input id="priceInput" type="number" min="0" placeholder="FCFA">
+          </label>
+          <button type="submit" class="btn primary">Rechercher</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="features">
+      <div><strong>✓</strong><span><b>Annonces claires</b><small>Informations essentielles</small></span></div>
+      <div><strong>✓</strong><span><b>Contact direct</b><small>Échangez avec le propriétaire</small></span></div>
+      <div><strong>✓</strong><span><b>Large choix</b><small>Des villas pour tous les besoins</small></span></div>
+      <div><strong>✓</strong><span><b>Au Sénégal</b><small>Saly, Mbour et plus encore</small></span></div>
+    </section>
+
+    <section id="villas" class="section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">NOS ANNONCES</p>
+          <h2>Villas disponibles</h2>
+        </div>
+        <button id="resetSearch" class="btn outline">Voir toutes les villas</button>
+      </div>
+      <p id="resultMessage" class="result-message"></p>
+      <div id="villaGrid" class="villa-grid"></div>
+    </section>
+
+    <section id="proprietaires" class="owner-section">
+      <div>
+        <p class="eyebrow">PROPRIÉTAIRES</p>
+        <h2>Vous avez une villa à louer ?</h2>
+        <p>Publiez votre annonce et permettez aux locataires de vous contacter directement.</p>
+      </div>
+      <button id="openOwner" class="btn light">Publier ma villa</button>
+    </section>
+
+    <section id="apropos" class="section about">
+      <div>
+        <p class="eyebrow">À PROPOS</p>
+        <h2>VillaLink, le lien direct vers votre villa.</h2>
+      </div>
+      <p>Notre objectif est de rendre la recherche de villas plus simple, plus transparente et plus accessible. Cette première version est un prototype : les annonces sont enregistrées dans le navigateur.</p>
+    </section>
+  </main>
+
+  <footer id="contact">
+    <div>
+      <a class="logo" href="#accueil"><span class="logo-mark">V</span><span>Villa<span>Link</span></span></a>
+      <p>Le lien direct vers votre villa.</p>
+    </div>
+    <div>
+      <h3>Contact</h3>
+      <p>WhatsApp : +221 77 000 00 00</p>
+      <p>Email : contact@villalink.sn</p>
+    </div>
+    <p class="copyright">© 2026 VillaLink — Sénégal</p>
+  </footer>
+
+  <div id="villaModal" class="modal hidden">
+    <div class="modal-card">
+      <button class="close" data-close>×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <div id="ownerModal" class="modal hidden">
+    <div class="modal-card">
+      <button class="close" data-close>×</button>
+      <p class="eyebrow">NOUVELLE ANNONCE</p>
+      <h2>Publier une villa</h2>
+      <form id="ownerForm" class="owner-form">
+        <input name="title" placeholder="Nom de la villa" required>
+        <input name="location" placeholder="Localisation (ex. Saly)" required>
+        <input name="price" type="number" min="0" placeholder="Prix par nuit en FCFA" required>
+        <input name="rooms" type="number" min="1" placeholder="Nombre de chambres" required>
+        <input name="phone" placeholder="WhatsApp du propriétaire" required>
+        <input name="image" placeholder="URL d'une photo (optionnel)">
+        <textarea name="description" rows="4" placeholder="Décrivez votre villa..." required></textarea>
+        <button class="btn primary" type="submit">Publier l'annonce</button>
+      </form>
+      <p class="note">Prototype : l'annonce est enregistrée uniquement sur cet appareil.</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
