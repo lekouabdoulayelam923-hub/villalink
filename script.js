@@ -67,17 +67,19 @@ function compressImage(file,maxWidth=800,quality=.5){
  });
 }
 photoFiles?.addEventListener("change",async()=>{
- const files=[...photoFiles.files].slice(0,5);
- selectedPhotoData="";
- selectedPhotoDataList=[];
- photoPreview.innerHTML="";
- for(const file of files){
+ const files=[...photoFiles.files];
+ if(!files.length)return;
+ const remaining=5-selectedPhotoDataList.length;
+ if(remaining<=0){alert("Vous pouvez ajouter jusqu'à 5 photos.");return}
+ for(const file of files.slice(0,remaining)){
   const data=await compressImage(file);
   selectedPhotoDataList.push(data);
   if(!selectedPhotoData) selectedPhotoData=data;
   const box=document.createElement("div");box.className="photo-thumb";box.innerHTML=`<img src="${data}" alt="Photo de villa">`;photoPreview.appendChild(box);
  }
+ photoPreview.querySelectorAll(".photo-count").forEach(x=>x.remove());
  if(selectedPhotoDataList.length) photoPreview.insertAdjacentHTML("beforeend",`<div class="photo-count">${selectedPhotoDataList.length} photo${selectedPhotoDataList.length>1?"s":""} sélectionnée${selectedPhotoDataList.length>1?"s":""}</div>`);
+ if(files.length>remaining) alert("Maximum 5 photos. Les premières photos ont été ajoutées.");
  updateOwnerPreview();
 });
 const ownerForm=document.getElementById("ownerForm");
