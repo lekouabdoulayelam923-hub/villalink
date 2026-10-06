@@ -178,7 +178,11 @@ if (authForm) {
     }
     authForm.reset();authModal.classList.add("hidden");
     const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
-    if(session&&typeof showDashboard==="function")showDashboard(session);
+    if(session){
+      if(typeof showDashboard==="function")showDashboard(session);
+      const dash=document.getElementById("dashboard");
+      if(dash){dash.classList.remove("hidden");dash.hidden=false;dash.style.display="block";setTimeout(()=>dash.scrollIntoView({behavior:"smooth",block:"start"}),100);}
+    }
   });
 }
 updateAuth();
@@ -191,6 +195,7 @@ function showDashboard(session){
   if(!dashboard||!session)return;
   dashboard.classList.remove("hidden");
   dashboard.style.display="block";
+  dashboard.hidden=false;
   dashboardName.textContent=session.name||"Utilisateur";
   adminPanel?.classList.add("hidden");
   favoritesPanel?.classList.add("hidden");
