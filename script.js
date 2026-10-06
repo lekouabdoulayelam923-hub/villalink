@@ -50,7 +50,7 @@ const photoFiles=document.getElementById("photoFiles");
 const photoPreview=document.getElementById("photoPreview");
 let selectedPhotoData="";
 let selectedPhotoDataList=[];
-function compressImage(file,maxWidth=1200,quality=.72){
+function compressImage(file,maxWidth=800,quality=.5){
  return new Promise(resolve=>{
   const reader=new FileReader();
   reader.onload=()=>{
@@ -97,8 +97,8 @@ ownerForm.addEventListener("submit",e=>{
  const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
  const images=selectedPhotoDataList.length?[...selectedPhotoDataList]:[d.image||DEFAULT_VILLAS[0].image];
  const v={id:Date.now(),title:d.title,location:d.location,price:Number(d.price),rooms:Number(d.rooms),phone:d.phone.replace(/\D/g,""),image:images[0],images:images,description:d.description,amenities:amenities.length?amenities:["Nouvelle annonce"],ownerEmail:session?.email||"",ownerName:session?.name||""};
- const custom=getCustom();custom.push(v);localStorage.setItem("villalink_villas",JSON.stringify(custom));
- render();e.target.reset();selectedPhotoData="";selectedPhotoDataList=[];photoPreview.innerHTML="";updateOwnerPreview();ownerModal.classList.add("hidden");document.getElementById("villas").scrollIntoView({behavior:"smooth"});alert("Votre annonce a été ajoutée au prototype VillaLink.");
+ const custom=getCustom();custom.push(v);try{localStorage.setItem("villalink_villas",JSON.stringify(custom))}catch(err){alert("Les photos prennent trop de place. Choisis 2 ou 3 photos et réessaie.");console.error(err);return}
+ render();e.target.reset();selectedPhotoData="";selectedPhotoDataList=[];photoPreview.innerHTML="";updateOwnerPreview();ownerModal.classList.add("hidden");document.getElementById("villas").scrollIntoView({behavior:"smooth"});alert("Votre annonce a été ajoutée avec "+images.length+" photo"+(images.length>1?"s":"")+" !");
 });
 updateOwnerPreview();
 document.getElementById("menuBtn").onclick=()=>document.querySelector(".header nav").classList.toggle("mobile-open");
