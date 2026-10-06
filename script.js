@@ -176,12 +176,29 @@ if (authForm) {
       localStorage.setItem("villalink_session",JSON.stringify({name:account.name,email:account.email,role:selectedRole}));
       alert("👋 Bienvenue sur VillaLink, "+account.name+" ! Profil : "+(selectedRole==="proprietaire"?"Propriétaire":selectedRole==="admin"?"Administrateur":"Locataire")+".");
     }
-    authForm.reset();authModal.classList.add("hidden");
+    authForm.reset();
+    authModal.classList.add("hidden");
+
+    // Ouvre directement l'espace utilisateur après une connexion réussie.
     const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
-    if(session){
-      if(typeof showDashboard==="function")showDashboard(session);
-      const dash=document.getElementById("dashboard");
-      if(dash){dash.classList.remove("hidden");dash.hidden=false;dash.style.display="block";setTimeout(()=>dash.scrollIntoView({behavior:"smooth",block:"start"}),100);}
+    const dash=document.getElementById("dashboard");
+    if(session && dash){
+      dash.classList.remove("hidden");
+      dash.removeAttribute("hidden");
+      dash.style.display="block";
+      dash.style.visibility="visible";
+      dash.style.opacity="1";
+      const nameEl=document.getElementById("dashboardName");
+      const roleEl=document.getElementById("dashboardRole");
+      if(nameEl) nameEl.textContent=session.name||"Utilisateur";
+      if(roleEl) roleEl.textContent=session.role==="proprietaire"?"🏠 Propriétaire":session.role==="admin"?"🛡️ Administrateur":"👤 Locataire";
+      document.querySelectorAll(".owner-only").forEach(el=>el.style.display=session.role==="proprietaire"?"":"none");
+      document.querySelectorAll(".admin-only").forEach(el=>el.classList.toggle("hidden",session.role!=="admin"));
+      const loginBtn=document.getElementById("openLogin"),signupBtn=document.getElementById("openSignup");
+      if(loginBtn)loginBtn.textContent="Mon espace";
+      if(signupBtn)signupBtn.style.display="none";
+      window.location.hash="dashboard";
+      setTimeout(()=>dash.scrollIntoView({behavior:"smooth",block:"start"}),50);
     }
   });
 }
