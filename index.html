@@ -76,6 +76,12 @@
   </div>
   <div class="dashboard-role" id="dashboardRole">👤 Locataire</div>
   <div class="dashboard-grid">
+    <div class="dashboard-card admin-only hidden">
+      <div class="dashboard-icon">🛡️</div>
+      <h3>Administration</h3>
+      <p>Validez, refusez et gérez les annonces VillaLink.</p>
+      <button class="btn primary" id="adminBtn">Ouvrir l’administration</button>
+    </div>
     <div class="dashboard-card owner-only">
       <div class="dashboard-icon">🏠</div>
       <h3>Mes villas</h3>
@@ -105,6 +111,17 @@
     </div>
     <div id="myVillasGrid" class="my-villas-grid"></div>
   </div>
+  <div id="adminPanel" class="my-villas-panel hidden">
+    <div class="my-villas-heading">
+      <div>
+        <div class="eyebrow">ADMINISTRATION</div>
+        <h3>Gestion des annonces</h3>
+      </div>
+      <button class="btn outline" id="closeAdmin">Masquer</button>
+    </div>
+    <div id="adminStats" class="admin-stats"></div>
+    <div id="adminGrid" class="admin-grid"></div>
+  </div>
   <div id="favoritesPanel" class="my-villas-panel hidden">
     <div class="my-villas-heading">
       <div>
@@ -121,7 +138,7 @@
 <div class="auth-brand"><span class="logo-mark">V</span><div><strong>VillaLink</strong><small>Votre espace personnel</small></div></div>
 <div class="eyebrow" id="authEyebrow">ESPACE VILLALINK</div><h2 id="authTitle">Se connecter</h2>
 <p class="auth-sub" id="authSub">Accédez à vos recherches et à vos annonces.</p>
-<div class="role-switch"><button class="role active" data-role="locataire">👤 Locataire</button><button class="role" data-role="proprietaire">🏠 Propriétaire</button></div>
+<div class="role-switch"><button class="role active" data-role="locataire">👤 Locataire</button><button class="role" data-role="proprietaire">🏠 Propriétaire</button><button class="role" data-role="admin">🛡️ Admin</button></div>
 <form id="authForm" class="auth-form">
 <label>Nom complet<input id="authName" name="name" placeholder="Ex. Abdoulaye Lam" required></label>
 <label>Email<input name="email" type="email" placeholder="exemple@email.com" required></label>
@@ -152,6 +169,6 @@
 <div class="preview-box" id="ownerPreview"><div class="preview-placeholder">L’aperçu de votre annonce apparaîtra ici</div></div>
 <div class="owner-form-actions"><button class="btn outline" type="button" id="cancelVillaEdit">Annuler</button><button class="btn primary" type="submit">Publier mon annonce</button></div>
 </form><p class="note">Prototype V2 : votre annonce est enregistrée dans ce navigateur. La connexion à une vraie base de données viendra ensuite.</p></div></div>
-<script src="script.js?v=20261006-8"></script>
+<script src="script.js?v=20261006-9"></script>
 </body>
 </html>
