@@ -180,13 +180,21 @@ updateAuth();
 const dashboard=document.getElementById("dashboard"),dashboardName=document.getElementById("dashboardName"),dashboardRole=document.getElementById("dashboardRole"),logoutBtn=document.getElementById("logoutBtn"),myVillasBtn=document.getElementById("myVillasBtn"),adminBtn=document.getElementById("adminBtn"),adminPanel=document.getElementById("adminPanel"),adminGrid=document.getElementById("adminGrid"),adminStats=document.getElementById("adminStats"),closeAdmin=document.getElementById("closeAdmin");
 function showDashboard(session){
   if(!dashboard||!session)return;
-  dashboard.classList.remove("hidden");dashboardName.textContent=session.name||"Utilisateur";adminPanel?.classList.add("hidden");
-  const owner=session.role==="proprietaire",admin=session.role==="admin";dashboardRole.textContent=admin?"🛡️ Administrateur":owner?"🏠 Propriétaire":"👤 Locataire";
-  document.querySelectorAll(".owner-only").forEach(el=>{el.style.display=owner?"":"none"});document.querySelectorAll(".admin-only").forEach(el=>{el.classList.toggle("hidden",!admin)});
-  dashboard.scrollIntoView({behavior:"smooth",block:"start"});
+  dashboard.classList.remove("hidden");
+  dashboard.style.display="block";
+  dashboardName.textContent=session.name||"Utilisateur";
+  adminPanel?.classList.add("hidden");
+  favoritesPanel?.classList.add("hidden");
+  myVillasPanel?.classList.add("hidden");
+  document.getElementById("searchesPanel")?.classList.add("hidden");
+  const owner=session.role==="proprietaire",admin=session.role==="admin";
+  dashboardRole.textContent=admin?"🛡️ Administrateur":owner?"🏠 Propriétaire":"👤 Locataire";
+  document.querySelectorAll(".owner-only").forEach(el=>{el.style.display=owner?"":"none"});
+  document.querySelectorAll(".admin-only").forEach(el=>{el.classList.toggle("hidden",!admin)});
   const loginButton=document.getElementById("openLogin"),signupButton=document.getElementById("openSignup");
   if(loginButton)loginButton.textContent="Mon espace";
   if(signupButton)signupButton.style.display="none";
+  setTimeout(()=>dashboard.scrollIntoView({behavior:"smooth",block:"start"}),50);
   bindAuthButtons();
 }
 function hideDashboard(){
