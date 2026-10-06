@@ -8,7 +8,7 @@ const DEFAULT_VILLAS=[
 ];
 const grid=document.getElementById("villaGrid"),message=document.getElementById("resultMessage"),villaModal=document.getElementById("villaModal"),ownerModal=document.getElementById("ownerModal"),modalContent=document.getElementById("modalContent");
 function getCustom(){try{return JSON.parse(localStorage.getItem("villalink_villas")||"[]")}catch(e){return[]}}
-function allVillas(){return [...DEFAULT_VILLAS,...getCustom()]}
+function allVillas(){return [...DEFAULT_VILLAS,...getCustom().filter(v=>v.status!=="attente"&&v.status!=="refuse")]}
 function price(n){return new Intl.NumberFormat("fr-FR").format(Number(n))+" FCFA / nuit"}
 function safe(v){return String(v??"").replace(/[&<>"']/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[x]))}
 function getFavorites(){const s=JSON.parse(localStorage.getItem("villalink_session")||"null");if(!s?.email)return [];try{const a=JSON.parse(localStorage.getItem("villalink_favorites")||"{}");return Array.isArray(a[s.email])?a[s.email].map(Number):[]}catch(e){return []}}
@@ -103,7 +103,7 @@ ownerForm.addEventListener("submit",e=>{
  const editingId=e.target.dataset.editingId;
  if(editingId){
    const index=custom.findIndex(x=>Number(x.id)===Number(editingId)&&String(x.ownerEmail||"").toLowerCase()===String(session?.email||"").toLowerCase());
-   if(index>=0) custom[index]=v;
+   if(index>=0){v.status="attente";custom[index]=v;}
  }else{
    custom.push(v);
  }
@@ -148,7 +148,7 @@ document.querySelectorAll(".role").forEach(button => {
 });
 function updateAuth() {
   const inscription = authMode === "signup";
-  authTitle.textContent = inscription ? "Créer un compte" : "Se connecter";
+  authTitle.textContent = inscription ? (authRole==="admin" ? "Créer un compte administrateur (test)" : "Créer un compte") : "Se connecter";
   authSubmit.textContent = inscription ? "Créer mon compte" : "Se connecter";
   authToggle.textContent = inscription ? "J’ai déjà un compte → Se connecter" : "Pas encore de compte → Créer un compte";
   if (authNameField) { authNameField.style.display = inscription ? "" : "none"; authNameField.required = inscription; }
@@ -182,12 +182,12 @@ updateAuth();
 // ===============================
 // TABLEAU DE BORD
 // ===============================
-const dashboard=document.getElementById("dashboard"),dashboardName=document.getElementById("dashboardName"),dashboardRole=document.getElementById("dashboardRole"),logoutBtn=document.getElementById("logoutBtn"),myVillasBtn=document.getElementById("myVillasBtn");
+const dashboard=document.getElementById("dashboard"),dashboardName=document.getElementById("dashboardName"),dashboardRole=document.getElementById("dashboardRole"),logoutBtn=document.getElementById("logoutBtn"),myVillasBtn=document.getElementById("myVillasBtn"),adminBtn=document.getElementById("adminBtn"),adminPanel=document.getElementById("adminPanel"),adminGrid=document.getElementById("adminGrid"),adminStats=document.getElementById("adminStats"),closeAdmin=document.getElementById("closeAdmin");
 function showDashboard(session){
   if(!dashboard||!session)return;
-  dashboard.classList.remove("hidden");dashboardName.textContent=session.name||"Utilisateur";
-  const owner=session.role==="proprietaire";dashboardRole.textContent=owner?"🏠 Propriétaire":"👤 Locataire";
-  document.querySelectorAll(".owner-only").forEach(el=>{el.style.display=owner?"":"none"});
+  dashboard.classList.remove("hidden");dashboardName.textContent=session.name||"Utilisateur";adminPanel?.classList.add("hidden");
+  const owner=session.role==="proprietaire",admin=session.role==="admin";dashboardRole.textContent=admin?"🛡️ Administrateur":owner?"🏠 Propriétaire":"👤 Locataire";
+  document.querySelectorAll(".owner-only").forEach(el=>{el.style.display=owner?"":"none"});document.querySelectorAll(".admin-only").forEach(el=>{el.classList.toggle("hidden",!admin)});
   dashboard.scrollIntoView({behavior:"smooth",block:"start"});
   const loginButton=document.getElementById("openLogin"),signupButton=document.getElementById("openSignup");
   if(loginButton)loginButton.textContent="Mon espace";if(signupButton)signupButton.style.display="none";if(loginButton)loginButton.onclick=()=>dashboard.scrollIntoView({behavior:"smooth"});
@@ -284,6 +284,32 @@ function showMyVillas(){
 }
 if(myVillasBtn)myVillasBtn.addEventListener("click",showMyVillas);
 if(closeMyVillas)closeMyVillas.addEventListener("click",()=>myVillasPanel?.classList.add("hidden"));
+function showAdmin(){
+ const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
+ if(!session||session.role!=="admin"){alert("Accès réservé à l’administrateur.");return}
+ const custom=getCustom();
+ const attente=custom.filter(v=>v.status==="attente").length,publiees=custom.filter(v=>v.status==="publie").length,refusees=custom.filter(v=>v.status==="refuse").length;
+ if(adminStats)adminStats.innerHTML=`<div><strong>${custom.length}</strong><span>Total</span></div><div><strong>${attente}</strong><span>En attente</span></div><div><strong>${publiees}</strong><span>Publiées</span></div><div><strong>${refusees}</strong><span>Refusées</span></div>`;
+ if(adminGrid){
+  if(!custom.length){adminGrid.innerHTML='<div class="empty"><h3>Aucune annonce propriétaire</h3><p>Les nouvelles annonces apparaîtront ici.</p></div>'}
+  else{adminGrid.innerHTML=custom.map(v=>`<article class="admin-card"><div class="admin-img" style="background-image:url('${safe(v.image)}')"></div><div class="admin-body"><div class="eyebrow">${safe(v.location)} · ${v.status==="attente"?"🟠 En attente":v.status==="refuse"?"🔴 Refusée":"🟢 Publiée"}</div><h4>${safe(v.title)}</h4><p>👤 ${safe(v.ownerName||"Propriétaire")} · 🛏 ${safe(v.rooms)} chambres</p><p>💰 ${price(v.price)}</p><div class="admin-actions"><button class="btn outline" data-admin-view="${v.id}">Voir</button><button class="btn primary" data-admin-approve="${v.id}">✓ Accepter</button><button class="btn danger" data-admin-refuse="${v.id}">✕ Refuser</button><button class="btn danger" data-admin-delete="${v.id}">🗑️ Supprimer</button></div></div></article>`).join("")}
+  adminGrid.querySelectorAll("[data-admin-view]").forEach(b=>b.onclick=()=>openVilla(Number(b.dataset.adminView)));
+  adminGrid.querySelectorAll("[data-admin-approve]").forEach(b=>b.onclick=()=>adminSetStatus(Number(b.dataset.adminApprove),"publie"));
+  adminGrid.querySelectorAll("[data-admin-refuse]").forEach(b=>b.onclick=()=>adminSetStatus(Number(b.dataset.adminRefuse),"refuse"));
+  adminGrid.querySelectorAll("[data-admin-delete]").forEach(b=>b.onclick=()=>adminDelete(Number(b.dataset.adminDelete)));
+ }
+ myVillasPanel?.classList.add("hidden");favoritesPanel?.classList.add("hidden");adminPanel?.classList.remove("hidden");adminPanel?.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function adminSetStatus(id,status){
+ const session=JSON.parse(localStorage.getItem("villalink_session")||"null");if(session?.role!=="admin")return;
+ const custom=getCustom(),v=custom.find(x=>Number(x.id)===Number(id));if(!v)return;v.status=status;localStorage.setItem("villalink_villas",JSON.stringify(custom));render();showAdmin();
+}
+function adminDelete(id){
+ const session=JSON.parse(localStorage.getItem("villalink_session")||"null");if(session?.role!=="admin")return;
+ const custom=getCustom(),v=custom.find(x=>Number(x.id)===Number(id));if(!v)return;if(!confirm("Supprimer définitivement « "+v.title+" » ?"))return;
+ localStorage.setItem("villalink_villas",JSON.stringify(custom.filter(x=>Number(x.id)!==Number(id))));render();showAdmin();
+}
+adminBtn?.addEventListener("click",showAdmin);closeAdmin?.addEventListener("click",()=>adminPanel?.classList.add("hidden"));
 function showFavorites(){
  const s=JSON.parse(localStorage.getItem("villalink_session")||"null");if(!s?.email){alert("Connectez-vous pour utiliser vos favoris.");return}
  const ids=getFavorites(),mine=allVillas().filter(v=>ids.includes(Number(v.id)));
