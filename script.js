@@ -164,8 +164,11 @@ if (authForm) {
     }else{
       const account=accounts.find(account=>account.email.toLowerCase()===email.toLowerCase()&&account.password===password);
       if(!account){alert("❌ Email ou mot de passe incorrect.");return}
-      localStorage.setItem("villalink_session",JSON.stringify({name:account.name,email:account.email,role:account.role}));
-      alert("👋 Bienvenue sur VillaLink, "+account.name+" !");
+      // Le rôle choisi dans le sélecteur devient le profil ouvert dans cette session.
+      // Prototype : dans la version sécurisée, le serveur contrôlera les permissions.
+      const selectedRole=authRole||account.role||"locataire";
+      localStorage.setItem("villalink_session",JSON.stringify({name:account.name,email:account.email,role:selectedRole}));
+      alert("👋 Bienvenue sur VillaLink, "+account.name+" ! Profil : "+(selectedRole==="proprietaire"?"Propriétaire":selectedRole==="admin"?"Administrateur":"Locataire")+".");
     }
     authForm.reset();authModal.classList.add("hidden");
     const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
