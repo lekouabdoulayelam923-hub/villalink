@@ -284,20 +284,33 @@ function showMyVillas(){
 }
 if(myVillasBtn)myVillasBtn.addEventListener("click",showMyVillas);
 if(closeMyVillas)closeMyVillas.addEventListener("click",()=>myVillasPanel?.classList.add("hidden"));
+let adminFilter="toutes",adminSearch="";
 function showAdmin(){
  const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
  if(!session||session.role!=="admin"){alert("Accès réservé à l’administrateur.");return}
  const custom=getCustom();
  const attente=custom.filter(v=>v.status==="attente").length,publiees=custom.filter(v=>v.status==="publie").length,refusees=custom.filter(v=>v.status==="refuse").length;
  if(adminStats)adminStats.innerHTML=`<div><strong>${custom.length}</strong><span>Total</span></div><div><strong>${attente}</strong><span>En attente</span></div><div><strong>${publiees}</strong><span>Publiées</span></div><div><strong>${refusees}</strong><span>Refusées</span></div>`;
+ const search=adminSearch.trim().toLowerCase();
+ const filtered=custom.filter(v=>{
+   const statusOk=adminFilter==="toutes"||v.status===adminFilter;
+   const text=[v.title,v.location,v.ownerName,v.ownerEmail].join(" ").toLowerCase();
+   return statusOk&&(!search||text.includes(search));
+ });
  if(adminGrid){
-  if(!custom.length){adminGrid.innerHTML='<div class="empty"><h3>Aucune annonce propriétaire</h3><p>Les nouvelles annonces apparaîtront ici.</p></div>'}
-  else{adminGrid.innerHTML=custom.map(v=>`<article class="admin-card"><div class="admin-img" style="background-image:url('${safe(v.image)}')"></div><div class="admin-body"><div class="eyebrow">${safe(v.location)} · ${v.status==="attente"?"🟠 En attente":v.status==="refuse"?"🔴 Refusée":"🟢 Publiée"}</div><h4>${safe(v.title)}</h4><p>👤 ${safe(v.ownerName||"Propriétaire")} · 🛏 ${safe(v.rooms)} chambres</p><p>💰 ${price(v.price)}</p><div class="admin-actions"><button class="btn outline" data-admin-view="${v.id}">Voir</button><button class="btn primary" data-admin-approve="${v.id}">✓ Accepter</button><button class="btn danger" data-admin-refuse="${v.id}">✕ Refuser</button><button class="btn danger" data-admin-delete="${v.id}">🗑️ Supprimer</button></div></div></article>`).join("")}
+  if(!filtered.length){adminGrid.innerHTML='<div class="empty"><h3>Aucune annonce trouvée</h3><p>Modifiez votre recherche ou votre filtre.</p></div>'}
+  else{
+   adminGrid.innerHTML=filtered.map(v=>`<article class="admin-card"><div class="admin-img" style="background-image:url('${safe(v.image)}')"></div><div class="admin-body"><div class="eyebrow">${safe(v.location)} · ${v.status==="attente"?"🟠 En attente":v.status==="refuse"?"🔴 Refusée":"🟢 Publiée"}</div><h4>${safe(v.title)}</h4><p>👤 <strong>${safe(v.ownerName||"Propriétaire")}</strong></p><p>✉️ ${safe(v.ownerEmail||"Email non renseigné")}</p><p>🛏 ${safe(v.rooms)} chambres · 💰 ${price(v.price)}</p><div class="admin-actions"><button class="btn outline" data-admin-view="${v.id}">Voir</button><button class="btn primary" data-admin-approve="${v.id}">✓ Accepter</button><button class="btn danger" data-admin-refuse="${v.id}">✕ Refuser</button><button class="btn danger" data-admin-delete="${v.id}">🗑️ Supprimer</button></div></div></article>`).join("")
+  }
   adminGrid.querySelectorAll("[data-admin-view]").forEach(b=>b.onclick=()=>openVilla(Number(b.dataset.adminView)));
   adminGrid.querySelectorAll("[data-admin-approve]").forEach(b=>b.onclick=()=>adminSetStatus(Number(b.dataset.adminApprove),"publie"));
   adminGrid.querySelectorAll("[data-admin-refuse]").forEach(b=>b.onclick=()=>adminSetStatus(Number(b.dataset.adminRefuse),"refuse"));
   adminGrid.querySelectorAll("[data-admin-delete]").forEach(b=>b.onclick=()=>adminDelete(Number(b.dataset.adminDelete)));
  }
+ document.querySelectorAll("[data-admin-filter]").forEach(b=>b.classList.toggle("active",b.dataset.adminFilter===adminFilter));
+ const searchInput=document.getElementById("adminSearch");
+ if(searchInput){searchInput.value=adminSearch;searchInput.oninput=e=>{adminSearch=e.target.value;showAdmin()}}
+ document.querySelectorAll("[data-admin-filter]").forEach(b=>b.onclick=()=>{adminFilter=b.dataset.adminFilter;showAdmin()});
  myVillasPanel?.classList.add("hidden");favoritesPanel?.classList.add("hidden");adminPanel?.classList.remove("hidden");adminPanel?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 function adminSetStatus(id,status){
