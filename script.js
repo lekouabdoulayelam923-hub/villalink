@@ -1,145 +1,29 @@
-const defaultVillas = [
-  {
-    id: 1, title: "Villa Baobab", location: "Saly", price: 75000, rooms: 4,
-    phone: "221770000000",
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=80",
-    description: "Belle villa avec piscine, jardin et espace extérieur, idéale pour un séjour en famille."
-  },
-  {
-    id: 2, title: "Villa Océan", location: "Mbour", price: 60000, rooms: 3,
-    phone: "221770000000",
-    image: "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1000&q=80",
-    description: "Villa confortable proche de la mer, avec un grand salon et une terrasse."
-  },
-  {
-    id: 3, title: "Villa Soleil", location: "Saly", price: 95000, rooms: 5,
-    phone: "221770000000",
-    image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1000&q=80",
-    description: "Grande villa pour groupes et familles, avec piscine et plusieurs chambres."
-  }
+const DEFAULT_VILLAS=[
+{id:1,title:"Villa Baobab",location:"Saly",price:75000,rooms:4,phone:"221770000000",image:"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1100&q=85",description:"Une belle villa moderne avec piscine et espace extérieur, idéale pour les familles et les séjours entre amis.",amenities:["Piscine","Climatisation","Wi-Fi"]},
+{id:2,title:"Villa Océan",location:"Mbour",price:60000,rooms:3,phone:"221770000000",image:"https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1100&q=85",description:"Une villa confortable avec une grande terrasse, parfaite pour profiter de l'ambiance de la Petite-Côte.",amenities:["Terrasse","Climatisation","Parking"]},
+{id:3,title:"Villa Soleil",location:"Saly",price:95000,rooms:5,phone:"221770000000",image:"https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1100&q=85",description:"Grande villa avec piscine et plusieurs chambres, adaptée aux groupes et aux familles nombreuses.",amenities:["Piscine","5 chambres","Jardin"]},
+{id:4,title:"Villa Teranga",location:"Mbour",price:85000,rooms:4,phone:"221770000000",image:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1100&q=85",description:"Une villa élégante et chaleureuse pour profiter d'un séjour confortable sur la Petite-Côte.",amenities:["Piscine","Wi-Fi","Cuisine équipée"]},
+{id:5,title:"Villa Almadies",location:"Dakar",price:120000,rooms:4,phone:"221770000000",image:"https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1100&q=85",description:"Une adresse moderne à Dakar, pensée pour les séjours en famille ou entre amis.",amenities:["Climatisation","Wi-Fi","Parking"]},
+{id:6,title:"Villa Cocotier",location:"Saly",price:55000,rooms:3,phone:"221770000000",image:"https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1100&q=85",description:"Une villa conviviale avec espace extérieur, idéale pour un séjour agréable à prix accessible.",amenities:["Jardin","Terrasse","Parking"]}
 ];
-
-let customVillas = JSON.parse(localStorage.getItem("villalink_villas") || "[]");
-let villas = [...defaultVillas, ...customVillas];
-
-const grid = document.getElementById("villaGrid");
-const resultMessage = document.getElementById("resultMessage");
-const villaModal = document.getElementById("villaModal");
-const ownerModal = document.getElementById("ownerModal");
-const modalContent = document.getElementById("modalContent");
-
-function formatPrice(value) {
-  return new Intl.NumberFormat("fr-FR").format(Number(value)) + " FCFA / nuit";
-}
-
-function renderVillas(list = villas) {
-  grid.innerHTML = "";
-  resultMessage.textContent = `${list.length} villa${list.length > 1 ? "s" : ""} trouvée${list.length > 1 ? "s" : ""}.`;
-
-  if (!list.length) {
-    grid.innerHTML = "<p>Aucune villa ne correspond à votre recherche.</p>";
-    return;
-  }
-
-  list.forEach(villa => {
-    const card = document.createElement("article");
-    card.className = "card";
-    card.innerHTML = `
-      <div class="card-img" style="background-image:url('${villa.image}')"></div>
-      <div class="card-body">
-        <h3>${escapeHtml(villa.title)}</h3>
-        <p class="meta">📍 ${escapeHtml(villa.location)} · 🛏 ${villa.rooms} chambres</p>
-        <span class="price">${formatPrice(villa.price)}</span>
-        <div class="card-bottom">
-          <button class="btn outline" data-view="${villa.id}">Voir détails</button>
-          <a class="btn primary" target="_blank" rel="noopener" href="https://wa.me/${villa.phone}?text=${encodeURIComponent("Bonjour, je suis intéressé(e) par " + villa.title + " sur VillaLink.")}">WhatsApp</a>
-        </div>
-      </div>`;
-    grid.appendChild(card);
-  });
-
-  grid.querySelectorAll("[data-view]").forEach(btn => {
-    btn.addEventListener("click", () => openVilla(Number(btn.dataset.view)));
-  });
-}
-
-function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[c]));
-}
-
-function openVilla(id) {
-  const villa = villas.find(v => v.id === id);
-  if (!villa) return;
-  modalContent.innerHTML = `
-    <div class="modal-image" style="background-image:url('${villa.image}')"></div>
-    <p class="eyebrow">${escapeHtml(villa.location)}</p>
-    <h2>${escapeHtml(villa.title)}</h2>
-    <p class="meta">🛏 ${villa.rooms} chambres · 💰 ${formatPrice(villa.price)}</p>
-    <p>${escapeHtml(villa.description)}</p>
-    <br>
-    <a class="btn primary" target="_blank" rel="noopener" href="https://wa.me/${villa.phone}?text=${encodeURIComponent("Bonjour, je suis intéressé(e) par " + villa.title + " sur VillaLink.")}">Contacter le propriétaire sur WhatsApp</a>`;
-  villaModal.classList.remove("hidden");
-}
-
-document.getElementById("searchForm").addEventListener("submit", e => {
-  e.preventDefault();
-  const location = document.getElementById("locationInput").value.trim().toLowerCase();
-  const rooms = Number(document.getElementById("roomsInput").value || 0);
-  const maxPrice = Number(document.getElementById("priceInput").value || 0);
-
-  const filtered = villas.filter(v => {
-    const locationOk = !location || v.location.toLowerCase().includes(location);
-    const roomsOk = !rooms || v.rooms >= rooms;
-    const priceOk = !maxPrice || v.price <= maxPrice;
-    return locationOk && roomsOk && priceOk;
-  });
-
-  renderVillas(filtered);
-  document.getElementById("villas").scrollIntoView({behavior:"smooth"});
-});
-
-document.getElementById("resetSearch").addEventListener("click", () => {
-  document.getElementById("searchForm").reset();
-  renderVillas();
-});
-
-document.getElementById("openOwner").addEventListener("click", () => ownerModal.classList.remove("hidden"));
-
-document.querySelectorAll("[data-close]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    villaModal.classList.add("hidden");
-    ownerModal.classList.add("hidden");
-  });
-});
-
-document.querySelectorAll(".modal").forEach(modal => {
-  modal.addEventListener("click", e => {
-    if (e.target === modal) modal.classList.add("hidden");
-  });
-});
-
-document.getElementById("ownerForm").addEventListener("submit", e => {
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target).entries());
-  const newVilla = {
-    id: Date.now(),
-    title: data.title,
-    location: data.location,
-    price: Number(data.price),
-    rooms: Number(data.rooms),
-    phone: data.phone.replace(/\D/g, ""),
-    image: data.image || "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1000&q=80",
-    description: data.description
-  };
-  customVillas.push(newVilla);
-  localStorage.setItem("villalink_villas", JSON.stringify(customVillas));
-  villas = [...defaultVillas, ...customVillas];
-  renderVillas();
-  e.target.reset();
-  ownerModal.classList.add("hidden");
-  alert("Votre annonce a été ajoutée à ce prototype VillaLink.");
-});
-
-renderVillas();
+const grid=document.getElementById("villaGrid"),message=document.getElementById("resultMessage"),villaModal=document.getElementById("villaModal"),ownerModal=document.getElementById("ownerModal"),modalContent=document.getElementById("modalContent");
+function getCustom(){try{return JSON.parse(localStorage.getItem("villalink_villas")||"[]")}catch(e){return[]}}
+function allVillas(){return [...DEFAULT_VILLAS,...getCustom()]}
+function price(n){return new Intl.NumberFormat("fr-FR").format(Number(n))+" FCFA / nuit"}
+function safe(v){return String(v??"").replace(/[&<>"']/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[x]))}
+function render(list=allVillas()){
+grid.innerHTML="";message.textContent=`${list.length} villa${list.length>1?"s":""} disponible${list.length>1?"s":""}.`;
+if(!list.length){grid.innerHTML='<div class="empty"><h3>Aucune villa trouvée</h3><p>Essayez une autre ville ou un autre budget.</p></div>';return}
+list.forEach(v=>{const el=document.createElement("article");el.className="card";el.innerHTML=`<div class="card-img" style="background-image:url('${safe(v.image)}')"><span class="badge">✓ Disponible</span><span class="city-badge">${safe(v.location)}</span></div><div class="card-body"><h3>${safe(v.title)}</h3><p class="meta">📍 ${safe(v.location)} · 🛏 ${safe(v.rooms)} chambres</p><div class="amenities">${(v.amenities||[]).slice(0,3).map(a=>`<span>${safe(a)}</span>`).join("")}</div><span class="price">${price(v.price)}</span><div class="card-bottom"><button class="btn outline" data-view="${v.id}">Voir détails</button><a class="btn primary" target="_blank" rel="noopener" href="https://wa.me/${safe(v.phone)}?text=${encodeURIComponent("Bonjour, je suis intéressé(e) par "+v.title+" sur VillaLink.")}">WhatsApp</a></div></div>`;grid.appendChild(el)});
+grid.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>openVilla(Number(b.dataset.view)))}
+function openVilla(id){const v=allVillas().find(x=>x.id===id);if(!v)return;modalContent.innerHTML=`<div class="modal-image" style="background-image:url('${safe(v.image)}')"></div><div class="eyebrow">${safe(v.location)} · ${safe(v.rooms)} chambres</div><h2>${safe(v.title)}</h2><p class="modal-price">${price(v.price)}</p><div class="modal-amenities">${(v.amenities||[]).map(a=>`<span>✓ ${safe(a)}</span>`).join("")}</div><p style="margin-top:16px">${safe(v.description)}</p><a class="btn primary" style="margin-top:22px" target="_blank" rel="noopener" href="https://wa.me/${safe(v.phone)}?text=${encodeURIComponent("Bonjour, je suis intéressé(e) par "+v.title+" sur VillaLink.")}">Contacter le propriétaire</a>`;villaModal.classList.remove("hidden")}
+function applyFilters(){const loc=document.getElementById("locationInput").value.trim().toLowerCase(),rooms=Number(document.getElementById("roomsInput").value||0),max=Number(document.getElementById("priceInput").value||0);render(allVillas().filter(v=>(!loc||v.location.toLowerCase().includes(loc))&&(!rooms||v.rooms>=rooms)&&(!max||v.price<=max)))}
+document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();applyFilters();document.getElementById("villas").scrollIntoView({behavior:"smooth"})});
+document.querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));btn.classList.add("active");const city=btn.dataset.city;render(city?allVillas().filter(v=>v.location===city):allVillas());document.getElementById("villas").scrollIntoView({behavior:"smooth",block:"start"})}));
+document.getElementById("resetSearch").onclick=()=>{document.getElementById("searchForm").reset();document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));document.querySelector('.filter[data-city=""]').classList.add("active");render()};
+document.getElementById("openOwner").onclick=()=>ownerModal.classList.remove("hidden");
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>{villaModal.classList.add("hidden");ownerModal.classList.add("hidden")});
+document.querySelectorAll(".modal").forEach(m=>m.onclick=e=>{if(e.target===m)m.classList.add("hidden")});
+document.getElementById("ownerForm").addEventListener("submit",e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target).entries()),v={id:Date.now(),title:d.title,location:d.location,price:Number(d.price),rooms:Number(d.rooms),phone:d.phone.replace(/\D/g,""),image:d.image||DEFAULT_VILLAS[0].image,description:d.description,amenities:["Nouvelle annonce"]};const custom=getCustom();custom.push(v);localStorage.setItem("villalink_villas",JSON.stringify(custom));render();e.target.reset();ownerModal.classList.add("hidden");document.getElementById("villas").scrollIntoView({behavior:"smooth"});alert("Annonce ajoutée à votre prototype VillaLink.")});
+document.getElementById("menuBtn").onclick=()=>document.querySelector(".header nav").classList.toggle("mobile-open");
+render();
