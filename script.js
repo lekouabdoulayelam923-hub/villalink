@@ -98,7 +98,7 @@ ownerForm.addEventListener("submit",e=>{
  const amenities=[...e.target.querySelectorAll('input[name="amenity"]:checked')].map(x=>x.value);
  const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
  const images=selectedPhotoDataList.length?[...selectedPhotoDataList]:[d.image||DEFAULT_VILLAS[0].image];
- const v={id:Date.now(),title:d.title,location:d.location,price:Number(d.price),rooms:Number(d.rooms),phone:d.phone.replace(/\D/g,""),image:images[0],images:images,description:d.description,amenities:amenities.length?amenities:["Nouvelle annonce"],ownerEmail:session?.email||"",ownerName:session?.name||""};
+ const v={id:Date.now(),status:"attente",title:d.title,location:d.location,price:Number(d.price),rooms:Number(d.rooms),phone:d.phone.replace(/\D/g,""),image:images[0],images:images,description:d.description,amenities:amenities.length?amenities:["Nouvelle annonce"],ownerEmail:session?.email||"",ownerName:session?.name||""};
  const custom=getCustom();
  const editingId=e.target.dataset.editingId;
  if(editingId){
@@ -268,6 +268,7 @@ function showMyVillas(){
         <h4>${safe(v.title)}</h4>
         <p>🛏 ${safe(v.rooms)} chambres · ${price(v.price)}</p>
         <div class="amenities">${(v.amenities||[]).slice(0,3).map(a=>`<span>${safe(a)}</span>`).join("")}</div>
+        <div class="listing-status ${v.status==="refuse"?"status-refuse":v.status==="attente"?"status-attente":"status-publie"}">${v.status==="refuse"?"🔴 Refusée":v.status==="attente"?"🟠 En attente de validation":"🟢 Publiée"}</div>
         <div class="my-villa-actions">
           <button class="btn outline" data-my-villa="${v.id}">Voir l'annonce</button>
           <button class="btn outline" data-edit-villa="${v.id}">Modifier</button>
