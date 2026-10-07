@@ -170,15 +170,10 @@ function updateAuth() {
     );
   });
 }
-
-
-// CHOIX LOCATAIRE / PROPRIETAIRE / ADMIN
-
 document.querySelectorAll(".role").forEach(button => {
-
-  button.addEventListener("click", function(e) {
-
+  button.onclick = function(e) {
     e.preventDefault();
+    e.stopPropagation();
 
     authRole = this.dataset.role || "locataire";
 
@@ -187,12 +182,10 @@ document.querySelectorAll(".role").forEach(button => {
     });
 
     this.classList.add("active");
-
-    updateAuth();
-
-  });
-
+  };
 });
+
+// CHOIX LOCATAIRE / PROPRIETAIRE / ADMIN
 
 
 // FERMER
