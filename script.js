@@ -160,7 +160,6 @@ const dashboard=document.getElementById("dashboard"),dashboardName=document.getE
 
 const openLogin = document.getElementById("openLogin");
 const openSignup = document.getElementById("openSignup");
-const authForm = document.getElementById("authForm");
 const authModal = document.getElementById("authModal");
 
 
