@@ -163,12 +163,6 @@ function updateAuth() {
     authNameField.disabled = !signup;
   }
 
-  document.querySelectorAll(".role").forEach(btn => {
-    btn.classList.toggle(
-      "active",
-      btn.dataset.role === authRole
-    );
-  });
 }
 document.querySelectorAll(".role").forEach(button => {
   button.onclick = function(e) {
