@@ -737,6 +737,65 @@ photoFiles?.addEventListener(
     updateOwnerPreview();
   }
 );
+// ===============================
+// VIDÉOS PROPRIÉTAIRE
+// ===============================
+
+videoFiles?.addEventListener(
+  "change",
+  () => {
+    const files = [
+      ...videoFiles.files
+    ];
+
+    if (!files.length) return;
+
+    const remaining =
+      2 - selectedVideoDataList.length;
+
+    if (remaining <= 0) {
+      alert(
+        "Vous pouvez ajouter jusqu'à 2 vidéos."
+      );
+      return;
+    }
+
+    for (
+      const file of files.slice(0, remaining)
+    ) {
+      if (!file.type.startsWith("video/")) {
+        continue;
+      }
+
+      const reader =
+        new FileReader();
+
+      reader.onload = () => {
+        const data = reader.result;
+
+        selectedVideoDataList.push(data);
+
+        const box =
+          document.createElement("div");
+
+        box.className = "photo-thumb";
+
+        box.innerHTML = `
+          <video
+            src="${data}"
+            controls
+            playsinline
+            style="width:100%;border-radius:12px;"
+          ></video>
+        `;
+
+        videoPreview?.appendChild(box);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  }
+);
 
 // ===============================
 // FORMULAIRE PROPRIÉTAIRE
