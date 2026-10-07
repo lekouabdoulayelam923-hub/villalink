@@ -151,14 +151,14 @@
 <div class="eyebrow" id="authEyebrow">ESPACE VILLALINK</div><h2 id="authTitle">Se connecter</h2>
 <p class="auth-sub" id="authSub">Accédez à vos recherches et à vos annonces.</p>
 <div class="role-switch">
-  <button type="button" class="role active" data-role="locataire" onclick="setAuthRole('locataire')">👤 Locataire</button>
+  <button type="button" class="role active" data-role="locataire">👤 Locataire</button>
   <button type="button" class="role" data-role="proprietaire">🏠 Propriétaire</button>
 <button type="button" class="role" data-role="admin">🛡️ Admin</button>
 </div>
 <form id="authForm" class="auth-form">
 <label>Nom complet<input id="authName" name="name" placeholder="Ex. Abdoulaye Lam" required></label>
-<label>Email<input name="email" type="email" placeholder="exemple@email.com" required></label>
-<label>Mot de passe<input name="password" type="password" placeholder="••••••••" minlength="6" required></label>
+<label>Email<input id="email" name="email" type="email" placeholder="exemple@email.com" required></label>
+<label>Mot de passe<input id="password" name="password" type="password" placeholder="••••••••" minlength="6" required></label>
 <button class="btn primary" type="submit" id="authSubmit">Créer mon compte</button>
 </form>
 <button class="auth-toggle" id="authToggle">J’ai déjà un compte → Se connecter</button>
