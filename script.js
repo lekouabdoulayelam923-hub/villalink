@@ -842,9 +842,30 @@ videoFiles?.addEventListener(
             playsinline
             style="width:100%;border-radius:12px;"
           ></video>
+
+          <button
+            type="button"
+            class="remove-video"
+            title="Supprimer cette vidéo"
+          >
+            🗑️
+          </button>
         `;
 
         videoPreview?.appendChild(box);
+
+        box
+          .querySelector(".remove-video")
+          ?.addEventListener("click", () => {
+            const index =
+              [...videoPreview.children].indexOf(box);
+
+            if (index !== -1) {
+              selectedVideoDataList.splice(index, 1);
+            }
+
+            box.remove();
+          });
       };
 
       reader.readAsDataURL(file);
