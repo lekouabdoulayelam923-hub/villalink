@@ -628,8 +628,15 @@ const photoFiles =
 const photoPreview =
   document.getElementById("photoPreview");
 
+const videoFiles =
+  document.getElementById("videoFiles");
+
+const videoPreview =
+  document.getElementById("videoPreview");
+
 let selectedPhotoData = "";
 let selectedPhotoDataList = [];
+let selectedVideoDataList = [];
 
 function compressImage(
   file,
