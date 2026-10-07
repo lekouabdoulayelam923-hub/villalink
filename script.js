@@ -745,19 +745,48 @@ photoFiles?.addEventListener(
         selectedPhotoData = data;
       }
 
-      const box =
-        document.createElement("div");
+     const box =
+  document.createElement("div");
 
-      box.className = "photo-thumb";
+box.className = "photo-thumb";
 
-      box.innerHTML = `
-        <img
-          src="${data}"
-          alt="Photo de villa"
-        >
-      `;
+box.innerHTML = `
+  <img
+    src="${data}"
+    alt="Photo de villa"
+  >
+
+  <button
+    type="button"
+    class="remove-photo"
+    title="Supprimer cette photo"
+  >
+    🗑️
+  </button>
+`;
 
       photoPreview?.appendChild(box);
+      box
+  .querySelector(".remove-photo")
+  ?.addEventListener("click", () => {
+    const index =
+      [...photoPreview.children].indexOf(box);
+
+    if (index !== -1) {
+      selectedPhotoDataList.splice(index, 1);
+    }
+
+    if (selectedPhotoDataList.length) {
+      selectedPhotoData =
+        selectedPhotoDataList[0];
+    } else {
+      selectedPhotoData = "";
+    }
+
+    box.remove();
+
+    updateOwnerPreview();
+  });
     }
 
     updateOwnerPreview();
