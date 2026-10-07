@@ -709,9 +709,6 @@ function showSearches(){
 document.getElementById("searchesBtn")?.addEventListener("click",showSearches);document.getElementById("closeSearches")?.addEventListener("click",()=>document.getElementById("searchesPanel")?.classList.add("hidden"));
 function restoreSession(){try{const session=JSON.parse(localStorage.getItem("villalink_session")||"null");if(session)showDashboard(session)}catch(e){}}
 restoreSession();
-
-// Connexion / inscription : gestion centralisée et fiable
-function bindAuthButtons(){
   const login=document.getElementById("openLogin");
   const signup=document.getElementById("openSignup");
   if(login){
