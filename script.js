@@ -909,6 +909,10 @@ ownerForm?.addEventListener(
             data.image ||
             DEFAULT_VILLAS[0].image
           ];
+    const videos =
+  selectedVideoDataList.length
+    ? [...selectedVideoDataList]
+    : [];
 
     const villa = {
       id: Date.now(),
@@ -921,6 +925,7 @@ ownerForm?.addEventListener(
         .replace(/\D/g, ""),
       image: images[0],
       images,
+      videos,
       description: data.description || "",
       amenities:
         amenities.length
