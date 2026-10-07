@@ -116,6 +116,7 @@ ownerForm.addEventListener("submit",e=>{
 updateOwnerPreview();
 document.getElementById("menuBtn").onclick=()=>document.querySelector(".header nav").classList.toggle("mobile-open");
 render();
+
 // ===============================
 // AUTHENTIFICATION VILLALINK
 // ===============================
@@ -130,80 +131,360 @@ const closeAuth = document.getElementById("closeAuth");
 
 let authMode = "login";
 let authRole = "locataire";
+
 const openLogin = document.getElementById("openLogin");
 const openSignup = document.getElementById("openSignup");
-if (closeAuth) closeAuth.addEventListener("click", () => authModal.classList.add("hidden"));
-document.querySelectorAll(".role").forEach(button => {
-  button.addEventListener("click", (event) => {
-    event.preventDefault();
-    document.querySelectorAll(".role").forEach(btn => btn.classList.remove("active"));
-    button.classList.add("active");
-    authRole = button.dataset.role || "locataire";
-    updateAuth();
-  });
-});
-function setAuthRole(role){
-  authRole=role||"locataire";
-  document.querySelectorAll(".role").forEach(btn=>btn.classList.toggle("active",btn.dataset.role===authRole));
-  updateAuth();
-}
+
 function updateAuth() {
-  const inscription = authMode === "signup";
-  authTitle.textContent = inscription ? (authRole==="admin" ? "Créer un compte administrateur (test)" : "Créer un compte") : "Se connecter";
-  authSubmit.textContent = inscription ? "Créer mon compte" : "Se connecter";
-  authToggle.textContent = inscription ? "J’ai déjà un compte → Se connecter" : "Pas encore de compte → Créer un compte";
-  if (authNameField) { authNameField.style.display = inscription ? "" : "none"; authNameField.required = inscription; authNameField.disabled = !inscription; }
-}
-if (authToggle) authToggle.addEventListener("click", () => { authMode = authMode === "login" ? "signup" : "login"; updateAuth(); });
-if (authForm) {
-  authForm.addEventListener("submit", function(event) {
-    event.preventDefault();
-    const formData = new FormData(authForm),name=formData.get("name")||"",email=formData.get("email"),password=formData.get("password");
-    let accounts=[];try{accounts=JSON.parse(localStorage.getItem("villalink_accounts")||"[]")}catch(error){accounts=[]}
-    if(authMode==="signup"){
-      const exists=accounts.some(account=>account.email.toLowerCase()===email.toLowerCase());
-      if(exists){alert("Un compte existe déjà avec cet email.");return}
-      accounts.push({name,email,password,role:authRole});
-      localStorage.setItem("villalink_accounts",JSON.stringify(accounts));
-      localStorage.setItem("villalink_session",JSON.stringify({name,email,role:authRole}));
-      alert("🎉 Compte VillaLink créé avec succès !");
-    }else{
-      const account=accounts.find(account=>account.email.toLowerCase()===email.toLowerCase()&&account.password===password);
-      if(!account){alert("❌ Email ou mot de passe incorrect.");return}
-      // Le rôle choisi dans le sélecteur devient le profil ouvert dans cette session.
-      // Prototype : dans la version sécurisée, le serveur contrôlera les permissions.
-      const selectedRole=authRole||account.role||"locataire";
-      localStorage.setItem("villalink_session",JSON.stringify({name:account.name,email:account.email,role:selectedRole}));
-      alert("👋 Bienvenue sur VillaLink, "+account.name+" ! Profil : "+(selectedRole==="proprietaire"?"Propriétaire":selectedRole==="admin"?"Administrateur":"Locataire")+".");
-    }
-    authForm.reset();
-    authModal.classList.add("hidden");
 
-    // Ouvre directement l'espace utilisateur après une connexion réussie.
-    const session=JSON.parse(localStorage.getItem("villalink_session")||"null");
-    const dash=document.getElementById("dashboard");
-    if(session && dash){
-      dash.classList.remove("hidden");
-      dash.removeAttribute("hidden");
-      dash.style.display="block";
-      dash.style.visibility="visible";
-      dash.style.opacity="1";
-      const nameEl=document.getElementById("dashboardName");
-      const roleEl=document.getElementById("dashboardRole");
-      if(nameEl) nameEl.textContent=session.name||"Utilisateur";
-      if(roleEl) roleEl.textContent=session.role==="proprietaire"?"🏠 Propriétaire":session.role==="admin"?"🛡️ Administrateur":"👤 Locataire";
-      document.querySelectorAll(".owner-only").forEach(el=>el.style.display=session.role==="proprietaire"?"":"none");
-      document.querySelectorAll(".admin-only").forEach(el=>el.classList.toggle("hidden",session.role!=="admin"));
-      const loginBtn=document.getElementById("openLogin"),signupBtn=document.getElementById("openSignup");
-      if(loginBtn)loginBtn.textContent="Mon espace";
-      if(signupBtn)signupBtn.style.display="none";
-      window.location.hash="dashboard";
-      setTimeout(()=>dash.scrollIntoView({behavior:"smooth",block:"start"}),50);
-    }
+  const signup = authMode === "signup";
+
+  if (authTitle) {
+    authTitle.textContent = signup
+      ? "Créer un compte"
+      : "Se connecter";
+  }
+
+  if (authSubmit) {
+    authSubmit.textContent = signup
+      ? "Créer mon compte"
+      : "Se connecter";
+  }
+
+  if (authToggle) {
+    authToggle.textContent = signup
+      ? "J’ai déjà un compte → Se connecter"
+      : "Pas encore de compte → Créer un compte";
+  }
+
+  if (authNameField) {
+    authNameField.style.display = signup ? "" : "none";
+    authNameField.required = signup;
+    authNameField.disabled = !signup;
+  }
+
+  document.querySelectorAll(".role").forEach(btn => {
+    btn.classList.toggle(
+      "active",
+      btn.dataset.role === authRole
+    );
   });
 }
-updateAuth();
 
+
+// CHOIX LOCATAIRE / PROPRIETAIRE / ADMIN
+
+document.querySelectorAll(".role").forEach(button => {
+
+  button.addEventListener("click", function(e) {
+
+    e.preventDefault();
+
+    authRole = this.dataset.role || "locataire";
+
+    document.querySelectorAll(".role").forEach(btn => {
+      btn.classList.remove("active");
+    });
+
+    this.classList.add("active");
+
+    updateAuth();
+
+  });
+
+});
+
+
+// FERMER
+
+if (closeAuth) {
+  closeAuth.onclick = function() {
+    authModal?.classList.add("hidden");
+  };
+}
+
+
+// BASCULER CONNEXION / INSCRIPTION
+
+if (authToggle) {
+
+  authToggle.onclick = function(e) {
+
+    e.preventDefault();
+
+    authMode =
+      authMode === "login"
+        ? "signup"
+        : "login";
+
+    updateAuth();
+
+  };
+
+}
+
+
+// FORMULAIRE
+
+if (authForm) {
+
+  authForm.addEventListener("submit", function(e) {
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const formData = new FormData(authForm);
+
+    const name =
+      String(formData.get("name") || "").trim();
+
+    const email =
+      String(formData.get("email") || "")
+        .trim()
+        .toLowerCase();
+
+    const password =
+      String(formData.get("password") || "");
+
+    if (!email || !password) {
+
+      alert("Veuillez remplir votre email et votre mot de passe.");
+
+      return;
+
+    }
+
+
+    let accounts = [];
+
+    try {
+
+      accounts = JSON.parse(
+        localStorage.getItem("villalink_accounts") || "[]"
+      );
+
+      if (!Array.isArray(accounts)) {
+        accounts = [];
+      }
+
+    } catch(error) {
+
+      accounts = [];
+
+    }
+
+
+    // =========================
+    // INSCRIPTION
+    // =========================
+
+    if (authMode === "signup") {
+
+      if (!name) {
+
+        alert("Veuillez entrer votre nom.");
+
+        return;
+
+      }
+
+
+      const exists = accounts.some(account =>
+        String(account.email || "")
+          .toLowerCase() === email
+      );
+
+
+      if (exists) {
+
+        alert("Un compte existe déjà avec cet email.");
+
+        return;
+
+      }
+
+
+      const newAccount = {
+
+        name: name,
+        email: email,
+        password: password,
+        role: authRole
+
+      };
+
+
+      accounts.push(newAccount);
+
+      localStorage.setItem(
+        "villalink_accounts",
+        JSON.stringify(accounts)
+      );
+
+
+      const session = {
+
+        name: name,
+        email: email,
+        role: authRole
+
+      };
+
+
+      localStorage.setItem(
+        "villalink_session",
+        JSON.stringify(session)
+      );
+
+
+      alert("🎉 Compte VillaLink créé avec succès !");
+
+      authForm.reset();
+
+      authModal?.classList.add("hidden");
+
+      showDashboard(session);
+
+      return;
+
+    }
+
+
+    // =========================
+    // CONNEXION
+    // =========================
+
+    const account = accounts.find(account =>
+
+      String(account.email || "")
+        .toLowerCase() === email &&
+
+      String(account.password || "") === password
+
+    );
+
+
+    if (!account) {
+
+      alert("❌ Email ou mot de passe incorrect.");
+
+      return;
+
+    }
+
+
+    // IMPORTANT :
+    // on utilise le rôle choisi dans la page
+
+    const selectedRole =
+      authRole || account.role || "locataire";
+
+
+    const session = {
+
+      name: account.name || "Utilisateur",
+
+      email: account.email,
+
+      role: selectedRole
+
+    };
+
+
+    localStorage.setItem(
+      "villalink_session",
+      JSON.stringify(session)
+    );
+
+
+    alert(
+      "👋 Bienvenue " +
+      (session.name || "sur VillaLink") +
+      " !"
+    );
+
+
+    authForm.reset();
+
+    authModal?.classList.add("hidden");
+
+
+    // OUVERTURE DIRECTE DU TABLEAU DE BORD
+
+    showDashboard(session);
+
+  });
+
+}
+
+
+// =========================
+// BOUTON SE CONNECTER
+// =========================
+
+function bindAuthButtons() {
+
+  const loginBtn =
+    document.getElementById("openLogin");
+
+  const signupBtn =
+    document.getElementById("openSignup");
+
+
+  if (loginBtn) {
+
+    loginBtn.onclick = function(e) {
+
+      e.preventDefault();
+
+      const session =
+        JSON.parse(
+          localStorage.getItem("villalink_session") || "null"
+        );
+
+
+      if (session) {
+
+        showDashboard(session);
+
+        return;
+
+      }
+
+
+      authMode = "login";
+
+      updateAuth();
+
+      authModal?.classList.remove("hidden");
+
+    };
+
+  }
+
+
+  if (signupBtn) {
+
+    signupBtn.onclick = function(e) {
+
+      e.preventDefault();
+
+      authMode = "signup";
+
+      updateAuth();
+
+      authModal?.classList.remove("hidden");
+
+    };
+
+  }
+
+}
+
+
+bindAuthButtons();
+
+updateAuth();
 // ===============================
 // TABLEAU DE BORD
 // ===============================
