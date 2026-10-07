@@ -150,7 +150,11 @@
 <div class="auth-brand"><span class="logo-mark">V</span><div><strong>VillaLink</strong><small>Votre espace personnel</small></div></div>
 <div class="eyebrow" id="authEyebrow">ESPACE VILLALINK</div><h2 id="authTitle">Se connecter</h2>
 <p class="auth-sub" id="authSub">Accédez à vos recherches et à vos annonces.</p>
-<div class="role-switch"><button type="button" class="role active" data-role="locataire">👤 Locataire</button><button type="button" class="role" data-role="proprietaire">🏠 Propriétaire</button><button type="button" class="role" data-role="admin">🛡️ Admin</button></div>
+<div class="role-switch">
+  <button type="button" class="role active" data-role="locataire" onclick="setAuthRole('locataire')">👤 Locataire</button>
+  <button type="button" class="role" data-role="proprietaire" onclick="setAuthRole('proprietaire')">🏠 Propriétaire</button>
+  <button type="button" class="role" data-role="admin" onclick="setAuthRole('admin')">🛡️ Admin</button>
+</div>
 <form id="authForm" class="auth-form">
 <label>Nom complet<input id="authName" name="name" placeholder="Ex. Abdoulaye Lam" required></label>
 <label>Email<input name="email" type="email" placeholder="exemple@email.com" required></label>
