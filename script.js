@@ -361,6 +361,11 @@ function openVilla(id) {
     Array.isArray(villa.images) && villa.images.length
       ? villa.images
       : [villa.image];
+  
+  const videos =
+  Array.isArray(villa.videos)
+    ? villa.videos
+    : [];
 
   modalContent.innerHTML = `
     <div class="villa-gallery">
@@ -400,10 +405,31 @@ function openVilla(id) {
               alt="Photo ${index + 1}"
             >
           </button>
-        `).join("")}
+             `).join("")}
       </div>
 
     </div>
+
+    ${
+      videos.length
+        ? `
+          <div style="margin-top:20px">
+            <h3>🎥 Vidéo de la villa</h3>
+
+            <div style="display:grid;gap:14px;margin-top:12px">
+              ${videos.map(video => `
+                <video
+                  src="${safe(video)}"
+                  controls
+                  playsinline
+                  style="width:100%;border-radius:14px;max-height:420px"
+                ></video>
+              `).join("")}
+            </div>
+          </div>
+        `
+        : ""
+    }
 
     <div class="eyebrow">
       ${safe(villa.location)}
