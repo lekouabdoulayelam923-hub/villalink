@@ -121,7 +121,7 @@ render();
 // AUTHENTIFICATION VILLALINK
 // ===============================
 
-const authModal = document.getElementById("authModal");
+
 const authForm = document.getElementById("authForm");
 const authTitle = document.getElementById("authTitle");
 const authSubmit = document.getElementById("authSubmit");
