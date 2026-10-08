@@ -312,18 +312,36 @@ function render(list = allVillas()) {
             Voir détails
           </button>
 
-          <a
-            class="btn primary"
-            target="_blank"
-            rel="noopener"
-            href="https://wa.me/${safe(villa.phone)}?text=${encodeURIComponent(
-              "Bonjour, je suis intéressé(e) par " +
-              villa.title +
-              " sur VillaLink."
-            )}"
-          >
-            WhatsApp
-          </a>
+         ${
+  villa.phone
+    ? `
+      <a
+        class="btn primary"
+        target="_blank"
+        rel="noopener"
+        href="https://wa.me/${safe(villa.phone)}?text=${encodeURIComponent(
+          "Bonjour, je suis intéressé(e) par " +
+          villa.title +
+          " sur VillaLink."
+        )}"
+      >
+        💬 Contacter sur WhatsApp
+      </a>
+    `
+    : `
+      <p
+        style="
+          margin:0;
+          padding:12px;
+          border-radius:12px;
+          background:#fff3cd;
+          color:#856404;
+        "
+      >
+        ⚠️ Aucun numéro WhatsApp renseigné.
+      </p>
+    `
+}
         </div>
       </div>
     `;
@@ -479,12 +497,7 @@ function openVilla(id) {
   }
 </div>
 
-<a
-      class="btn primary"
-      style="margin-top:22px"
-      target="_blank"
-      rel="noopener"
-      href="https://wa.me/${safe(villa.phone)}?text=${encodeURIComponent(
+<a ...>Contacter le propriétaire</a>
         "Bonjour, je suis intéressé(e) par " +
         villa.title +
         " sur VillaLink."
