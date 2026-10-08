@@ -1594,6 +1594,17 @@ function showMyVillas() {
           )
         );
     });
+  
+  myVillasGrid
+  .querySelectorAll("[data-edit-villa]")
+  .forEach(button => {
+    button.onclick = () =>
+      editVilla(
+        Number(
+          button.dataset.editVilla
+        )
+      );
+  });
 
   myVillasPanel?.classList.remove(
     "hidden"
@@ -1649,6 +1660,42 @@ function deleteMyVilla(id) {
   showMyVillas();
 
   alert("Villa supprimée.");
+}
+// ===============================
+// MODIFIER UNE VILLA
+// ===============================
+
+function editVilla(id) {
+  const session = getSession();
+
+  if (
+    !session ||
+    session.role !== "proprietaire"
+  ) {
+    alert(
+      "Cette section est réservée aux propriétaires."
+    );
+    return;
+  }
+
+  const villa =
+    getCustom().find(
+      item =>
+        Number(item.id) === Number(id) &&
+        String(item.ownerEmail)
+          .toLowerCase() ===
+        String(session.email)
+          .toLowerCase()
+    );
+
+  if (!villa) {
+    alert("Villa introuvable.");
+    return;
+  }
+
+  alert(
+    `Modification de « ${villa.title} »`
+  );
 }
 
 // ===============================
