@@ -2628,11 +2628,24 @@ document
   ?.addEventListener(
     "click",
     () => {
-      document
-        .querySelector(".header nav")
-        ?.classList.toggle(
-          "mobile-open"
+
+      const nav =
+        document.querySelector(
+          ".header nav"
         );
+
+      const actions =
+        document.querySelector(
+          ".header-actions"
+        );
+
+      nav?.classList.toggle(
+        "mobile-open"
+      );
+
+      actions?.classList.toggle(
+        "mobile-open"
+      );
     }
   );
 
