@@ -105,7 +105,7 @@
 .auth-form input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(22,168,120,.1)}
 .auth-toggle{margin-top:17px;border:0;background:none;color:var(--green);font-weight:800;cursor:pointer}
 @media(max-width:850px){
-.header-actions{display:none}.header nav{display:none}.header nav.mobile-open{display:flex;position:absolute;top:78px;left:0;right:0;background:#fff;padding:18px 6%;flex-direction:column;gap:15px;border-bottom:1px solid var(--line)}
+.header-actions{display:flex}.header nav{display:none}.header nav.mobile-open{display:flex;position:absolute;top:78px;left:0;right:0;background:#fff;padding:18px 6%;flex-direction:column;gap:15px;border-bottom:1px solid var(--line)}
 .menu-btn{display:block}
 }
 
