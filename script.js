@@ -625,7 +625,7 @@ document
   .getElementById("openOwner")
   ?.addEventListener("click", () => {
     ownerModal?.classList.remove("hidden");
-    alert("FORMULAIRE OUVERT");
+    
   });
 
 document
@@ -1667,7 +1667,6 @@ function deleteMyVilla(id) {
 // ===============================
 
 function editVilla(id) {
-  alert("EDIT FONCTIONNE");
   
   const session = getSession();
 
