@@ -449,11 +449,37 @@ function openVilla(id) {
         .join("")}
     </div>
 
-    <p style="margin-top:16px">
-      ${safe(villa.description)}
-    </p>
+   <p style="margin-top:16px">
+  ${safe(villa.description)}
+</p>
 
-    <a
+<div
+  style="
+    margin-top:20px;
+    padding:16px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:#f8faf9;
+  "
+>
+  <strong>👤 Propriétaire</strong>
+
+  <p style="margin:6px 0 0">
+    ${safe(villa.ownerName || "Propriétaire")}
+  </p>
+
+  ${
+    villa.ownerEmail
+      ? `
+        <p style="margin:4px 0 0;font-size:13px;color:var(--muted)">
+          ✉️ ${safe(villa.ownerEmail)}
+        </p>
+      `
+      : ""
+  }
+</div>
+
+<a
       class="btn primary"
       style="margin-top:22px"
       target="_blank"
