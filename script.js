@@ -625,6 +625,7 @@ document
   .getElementById("openOwner")
   ?.addEventListener("click", () => {
     ownerModal?.classList.remove("hidden");
+    alert("FORMULAIRE OUVERT");
   });
 
 document
