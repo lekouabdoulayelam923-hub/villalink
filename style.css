@@ -8,7 +8,7 @@
 .final-cta{max-width:1200px;margin:0 auto;padding:80px 6%;display:flex;align-items:center;justify-content:space-between;gap:30px}
 .final-cta h2{font-size:40px;line-height:1.1;color:var(--navy);margin-bottom:10px}
 .final-cta p{color:var(--muted);font-size:17px}
-.floating-wa{position:fixed;right:24px;bottom:24px;z-index:80;background:#19a974;color:#fff;padding:13px 18px;border-radius:999px;font-weight:900;box-shadow:0 10px 25px rgba(16,42,67,.25);transition:.2s}
+.floating-wa{position:absolute;right:24px;bottom:24px;z-index:80;background:#19a974;color:#fff;padding:13px 18px;border-radius:999px;font-weight:900;box-shadow:0 10px 25px rgba(16,42,67,.25);transition:.2s}
 .floating-wa:hover{transform:translateY(-2px);color:#fff}
 @media(max-width:950px){.stats{grid-template-columns:repeat(2,1fr)}.stats>div:nth-child(2){border-right:0}.final-cta{display:block}.final-cta .btn{margin-top:20px}}
 @media(max-width:620px){.stats{grid-template-columns:1fr 1fr}.stats>div{padding:22px 10px}.final-cta{padding:60px 5%}.final-cta h2{font-size:32px}.floating-wa{right:15px;bottom:15px;padding:11px 15px;font-size:13px}}
