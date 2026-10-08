@@ -1666,6 +1666,8 @@ function deleteMyVilla(id) {
 // ===============================
 
 function editVilla(id) {
+  alert("EDIT FONCTIONNE");
+  
   const session = getSession();
 
   if (
@@ -1693,9 +1695,179 @@ function editVilla(id) {
     return;
   }
 
-  alert(
-    `Modification de « ${villa.title} »`
+  if (!ownerForm) return;
+
+  // Enregistrer l'identifiant de la villa en modification
+  ownerForm.dataset.editingId = villa.id;
+
+  // Remplir les champs
+  const fields = {
+    title: villa.title || "",
+    location: villa.location || "",
+    price: villa.price || "",
+    rooms: villa.rooms || "",
+    phone: villa.phone || "",
+    description: villa.description || ""
+  };
+
+  Object.entries(fields).forEach(
+    ([name, value]) => {
+      const field =
+        ownerForm.querySelector(
+          `[name="${name}"]`
+        );
+
+      if (field) {
+        field.value = value;
+      }
+    }
   );
+
+  // Remettre les équipements
+  ownerForm
+    .querySelectorAll(
+      'input[name="amenity"]'
+    )
+    .forEach(input => {
+      input.checked =
+        Array.isArray(villa.amenities) &&
+        villa.amenities.includes(
+          input.value
+        );
+    });
+
+  // Charger les photos existantes
+  selectedPhotoDataList =
+    Array.isArray(villa.images)
+      ? [...villa.images]
+      : villa.image
+      ? [villa.image]
+      : [];
+
+  selectedPhotoData =
+    selectedPhotoDataList[0] || "";
+
+  if (photoPreview) {
+    photoPreview.innerHTML = "";
+
+    selectedPhotoDataList.forEach(
+      data => {
+        const box =
+          document.createElement("div");
+
+        box.className = "photo-thumb";
+
+        box.innerHTML = `
+          <img
+            src="${data}"
+            alt="Photo de villa"
+          >
+
+          <button
+            type="button"
+            class="remove-photo"
+            title="Supprimer cette photo"
+          >
+            🗑️
+          </button>
+        `;
+
+        photoPreview.appendChild(box);
+
+        box
+          .querySelector(".remove-photo")
+          ?.addEventListener(
+            "click",
+            () => {
+              const index =
+                [...photoPreview.children]
+                  .indexOf(box);
+
+              if (index !== -1) {
+                selectedPhotoDataList.splice(
+                  index,
+                  1
+                );
+              }
+
+              selectedPhotoData =
+                selectedPhotoDataList[0] || "";
+
+              box.remove();
+
+              updateOwnerPreview();
+            }
+          );
+      }
+    );
+  }
+
+  // Charger les vidéos existantes
+  selectedVideoDataList =
+    Array.isArray(villa.videos)
+      ? [...villa.videos]
+      : [];
+
+  if (videoPreview) {
+    videoPreview.innerHTML = "";
+
+    selectedVideoDataList.forEach(
+      data => {
+        const box =
+          document.createElement("div");
+
+        box.className = "photo-thumb";
+
+        box.innerHTML = `
+          <video
+            src="${data}"
+            controls
+            playsinline
+            style="width:100%;border-radius:12px;"
+          ></video>
+
+          <button
+            type="button"
+            class="remove-video"
+            title="Supprimer cette vidéo"
+          >
+            🗑️
+          </button>
+        `;
+
+        videoPreview.appendChild(box);
+
+        box
+          .querySelector(".remove-video")
+          ?.addEventListener(
+            "click",
+            () => {
+              const index =
+                [...videoPreview.children]
+                  .indexOf(box);
+
+              if (index !== -1) {
+                selectedVideoDataList.splice(
+                  index,
+                  1
+                );
+              }
+
+              box.remove();
+            }
+          );
+      }
+    );
+  }
+
+  updateOwnerPreview();
+
+  // Ouvrir le formulaire
+  ownerModal?.classList.remove("hidden");
+
+  ownerModal?.scrollIntoView({
+    behavior: "smooth"
+  });
 }
 
 // ===============================
