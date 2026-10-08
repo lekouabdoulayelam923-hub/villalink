@@ -2019,19 +2019,34 @@ function showAdmin() {
                   Voir
                 </button>
 
-                <button
-                  class="btn primary"
-                  data-admin-approve="${villa.id}"
-                >
-                  ✓ Accepter
-                </button>
+               ${
+  villa.status === "attente"
+    ? `
+      <button
+        class="btn primary"
+        data-admin-approve="${villa.id}"
+      >
+        ✓ Accepter
+      </button>
 
-                <button
-                  class="btn danger"
-                  data-admin-refuse="${villa.id}"
-                >
-                  ✕ Refuser
-                </button>
+      <button
+        class="btn danger"
+        data-admin-refuse="${villa.id}"
+      >
+        ✕ Refuser
+      </button>
+    `
+    : villa.status === "refuse"
+    ? `
+      <button
+        class="btn primary"
+        data-admin-approve="${villa.id}"
+      >
+        ↻ Republier
+      </button>
+    `
+    : ""
+}
 
                 <button
                   class="btn danger"
