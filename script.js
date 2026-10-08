@@ -1517,15 +1517,59 @@ function showMyVillas() {
   }
 
   const mine =
-    getCustom().filter(
-      villa =>
-        String(villa.ownerEmail)
-          .toLowerCase() ===
-        String(session.email)
-          .toLowerCase()
-    );
+  getCustom().filter(
+    villa =>
+      String(villa.ownerEmail)
+        .toLowerCase() ===
+      String(session.email)
+        .toLowerCase()
+  );
 
-  if (!myVillasGrid) return;
+const total = mine.length;
+
+const published =
+  mine.filter(
+    villa => villa.status === "publie"
+  ).length;
+
+const waiting =
+  mine.filter(
+    villa => villa.status === "attente"
+  ).length;
+
+const refused =
+  mine.filter(
+    villa => villa.status === "refuse"
+  ).length;
+
+if (!myVillasGrid) return;
+  const statsBox = document.getElementById(
+  "ownerStats"
+);
+
+if (statsBox) {
+  statsBox.innerHTML = `
+    <div class="owner-stat">
+      <strong>${total}</strong>
+      <span>Total</span>
+    </div>
+
+    <div class="owner-stat">
+      <strong>${published}</strong>
+      <span>Publiées</span>
+    </div>
+
+    <div class="owner-stat">
+      <strong>${waiting}</strong>
+      <span>En attente</span>
+    </div>
+
+    <div class="owner-stat">
+      <strong>${refused}</strong>
+      <span>Refusées</span>
+    </div>
+  `;
+}
 
   if (!mine.length) {
     myVillasGrid.innerHTML = `
