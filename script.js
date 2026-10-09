@@ -1302,8 +1302,11 @@ authToggle?.addEventListener(
    const name =
      document.getElementById("authName")?.value.trim() || "";
 
-   const role =
-     document.getElementById("authRoleSelect")?.value || "locataire";
+const roleSelect = document.getElementById("authRoleSelect");
+
+const role = ["locataire", "proprietaire"].includes(roleSelect?.value)
+  ? roleSelect.value
+  : "locataire";
 
    if (!email || !password) {
      alert("Veuillez remplir votre email et votre mot de passe.");
