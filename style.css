@@ -269,3 +269,60 @@
     width:100%;
   }
 }
+
+/* CORRECTION DU FORMULAIRE D'AUTHENTIFICATION */
+
+.auth-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 15px;
+  width: 100%;
+}
+
+.auth-form .form-group {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+.auth-form .form-group select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #dce6e4;
+  border-radius: 10px;
+  font: inherit;
+}
+
+.auth-form button {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auth-form input {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Les choix de rôle restent alignés */
+.auth-role,
+.auth-roles,
+.role-selector {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.auth-role button,
+.auth-roles button,
+.role-selector button {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  padding: 10px 14px;
+  box-sizing: border-box;
+}
