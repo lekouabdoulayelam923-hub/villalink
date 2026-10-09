@@ -10,6 +10,7 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_PUBLIC_KEY
 );
+window.supabaseClient = supabaseClient;
 console.log("Supabase disponible :", !!supabaseClient);
 // =====================================================
 // VILLALINK - SCRIPT PRINCIPAL
