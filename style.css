@@ -355,13 +355,18 @@
   box-sizing: border-box;
 }
 
-/* Correction taille du bouton Administration */
+/* Correction de la carte Administration */
 #dashboard .admin-only {
-  width: auto;
+  width: 100%;
   min-width: 0;
-  max-width: fit-content;
-  flex: 0 0 auto;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: block;
+}
+
+#adminBtn {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  width: auto;
+  max-width: 100%;
+  box-sizing: border-box;
 }
