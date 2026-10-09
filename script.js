@@ -1,3 +1,15 @@
+
+/* ===============================
+   CONNEXION SUPABASE - VILLALINK
+================================ */
+
+const SUPABASE_URL = "https://mthbmcmerimwnauebggr.supabase.co";
+const SUPABASE_PUBLIC_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10aGJtY21lcmltd25hdWViZ2dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0OTY4NjYsImV4cCI6MjEwNzA3Mjg2Nn0.DYlss_IXUkWte1pB1cwfk7dDLmnfzE6MukHiScQy-nQ";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLIC_KEY
+);
 // =====================================================
 // VILLALINK - SCRIPT PRINCIPAL
 // =====================================================
