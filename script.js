@@ -1285,134 +1285,112 @@ authToggle?.addEventListener(
   }
 );
 
-// ===============================
-// CONNEXION / INSCRIPTION
-// ===============================
 
-authForm?.addEventListener(
-  "submit",
-  event => {
-    event.preventDefault();
+ // ===============================
+ // CONNEXION / INSCRIPTION SUPABASE
+ // ===============================
 
-    const emailInput =
-      document.getElementById("email");
+ authForm?.addEventListener("submit", async event => {
+   event.preventDefault();
 
-    const passwordInput =
-      document.getElementById("password");
+   const email = document.getElementById("email")?.value
+     .trim().toLowerCase() || "";
 
-    const nameInput =
-      document.getElementById("name") ||
-      document.getElementById("authName");
+   const password = document.getElementById("password")?.value || "";
 
-    const email =
-      emailInput?.value
-        .trim()
-        .toLowerCase() || "";
+   const name =
+     document.getElementById("authName")?.value.trim() || "";
 
-    const password =
-      passwordInput?.value || "";
+   const role =
+     document.getElementById("authRoleSelect")?.value || "locataire";
 
-    const name =
-      nameInput?.value.trim() || "";
+   if (!email || !password) {
+     alert("Veuillez remplir votre email et votre mot de passe.");
+     return;
+   }
 
-    if (!email || !password) {
-      alert(
-        "Veuillez remplir votre email et votre mot de passe."
-      );
-      return;
-    }
+   if (!window.supabaseClient) {
+     alert("Connexion à Supabase impossible. Vérifiez la configuration.");
+     return;
+   }
 
-    let accounts =
-      getAccounts();
+   authSubmit && (authSubmit.disabled = true);
 
-    // ---------------------------
-    // INSCRIPTION
-    // ---------------------------
+   try {
+     // INSCRIPTION
+     if (authMode === "signup") {
+       const { data, error } =
+         await window.supabaseClient.auth.signUp({
+           email,
+           password,
+           options: {
+             data: {
+               full_name: name || "Utilisateur",
+               role
+             }
+           }
+         });
 
-    if (authMode === "signup") {
+       if (error) throw error;
 
-      const exists =
-        accounts.some(
-          account =>
-            String(account.email)
-              .toLowerCase() === email
-        );
+       if (!data.session) {
+         alert(
+           "Compte créé ! Consultez votre boîte mail pour confirmer votre adresse, puis connectez-vous."
+         );
+         return;
+       }
 
-      if (exists) {
-        alert(
-          "Cette adresse email possède déjà un compte."
-        );
-        return;
-      }
+       const session = {
+         id: data.user.id,
+         name: name || "Utilisateur",
+         email: data.user.email,
+         role
+       };
 
-      const account = {
-        id: Date.now(),
-        name:
-          name || "Utilisateur",
-        email,
-        password,
-        role:
-          authRole || "locataire"
-      };
+       localStorage.setItem(
+         "villalink_session",
+         JSON.stringify(session)
+       );
 
-      accounts.push(account);
+       authModal?.classList.add("hidden");
+       showDashboard(session);
+       return;
+     }
 
-      saveAccounts(accounts);
+     // CONNEXION
+     const { data, error } =
+       await window.supabaseClient.auth.signInWithPassword({
+         email,
+         password
+       });
 
-      localStorage.setItem(
-        "villalink_session",
-        JSON.stringify(account)
-      );
+     if (error) throw error;
 
-      authModal?.classList.add(
-        "hidden"
-      );
+     const user = data.user;
+     const session = {
+       id: user.id,
+       name:
+         user.user_metadata?.full_name ||
+         user.email,
+       email: user.email,
+       role: user.user_metadata?.role || "locataire"
+     };
 
-      showDashboard(account);
+     localStorage.setItem(
+       "villalink_session",
+       JSON.stringify(session)
+     );
 
-      return;
-    }
+     authModal?.classList.add("hidden");
+     showDashboard(session);
 
-    // ---------------------------
-    // CONNEXION
-    // ---------------------------
-
-    const account =
-      accounts.find(
-        item =>
-          String(item.email)
-            .toLowerCase() === email &&
-          String(item.password) ===
-            password
-      );
-
-    if (!account) {
-      alert(
-        "Email ou mot de passe incorrect."
-      );
-      return;
-    }
-
-    const session = {
-      id: account.id,
-      name: account.name,
-      email: account.email,
-      role:
-        account.role || "locataire"
-    };
-
-    localStorage.setItem(
-      "villalink_session",
-      JSON.stringify(session)
-    );
-
-    authModal?.classList.add(
-      "hidden"
-    );
-
-    showDashboard(session);
-  }
-);
+   } catch (error) {
+     console.error("Erreur d'authentification :", error);
+     alert("Erreur : " + error.message);
+   } finally {
+     if (authSubmit) authSubmit.disabled = false;
+   }
+ });
 
 // ===============================
 // TABLEAU DE BORD
