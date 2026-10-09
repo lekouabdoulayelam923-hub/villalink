@@ -168,12 +168,56 @@
   <button type="button" class="role active" data-role="locataire">👤 Locataire</button>
   <button type="button" class="role" data-role="proprietaire">🏠 Propriétaire</button>
 <button type="button" class="role" data-role="admin">🛡️ Admin</button>
-</div>
+
 <form id="authForm" class="auth-form">
-<label>Nom complet<input id="authName" name="name" placeholder="Ex. Abdoulaye Lam" required></label>
-<label>Email<input id="email" name="email" type="email" placeholder="exemple@email.com" required></label>
-<label>Mot de passe<input id="password" name="password" type="password" placeholder="••••••••" minlength="6" required></label>
-<button class="btn primary" type="submit" id="authSubmit">Créer mon compte</button>
+  <label>
+    Nom complet
+    <input
+      id="authName"
+      name="name"
+      placeholder="Ex. Abdoulaye Lam"
+      required
+    >
+  </label>
+
+  <label>
+    Email
+    <input
+      id="email"
+      name="email"
+      type="email"
+      placeholder="exemple@email.com"
+      required
+    >
+  </label>
+
+  <label>
+    Mot de passe
+    <input
+      id="password"
+      name="password"
+      type="password"
+      placeholder="••••••••"
+      minlength="6"
+      required
+    >
+  </label>
+
+  <div class="form-group">
+    <label for="authRoleSelect">Je suis :</label>
+    <select id="authRoleSelect" name="role">
+      <option value="locataire">Locataire</option>
+      <option value="proprietaire">Propriétaire</option>
+    </select>
+  </div>
+
+  <button
+    class="btn primary"
+    type="submit"
+    id="authSubmit"
+  >
+    Créer mon compte
+  </button>
 </form>
 <button class="auth-toggle" id="authToggle">J’ai déjà un compte → Se connecter</button>
 <p class="note">Version prototype : les comptes sont enregistrés uniquement dans ce navigateur. La connexion sécurisée en ligne sera ajoutée avec notre base de données.</p>
