@@ -326,3 +326,31 @@
   padding: 10px 14px;
   box-sizing: border-box;
 }
+
+/* Bouton d'administration VillaLink */
+#adminBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  max-width: 100%;
+  padding: 10px 18px;
+  font-size: 14px;
+  line-height: 1.3;
+  white-space: normal;
+  margin-top: 10px;
+}
+
+.admin-only {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.dashboard-grid {
+  align-items: stretch;
+}
+
+.dashboard-card {
+  min-width: 0;
+  box-sizing: border-box;
+}
