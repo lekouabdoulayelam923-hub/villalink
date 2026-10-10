@@ -1370,15 +1370,26 @@ const role = ["locataire", "proprietaire"].includes(roleSelect?.value)
 
      if (error) throw error;
 
-     const user = data.user;
-     const session = {
-       id: user.id,
-       name:
-         user.user_metadata?.full_name ||
-         user.email,
-       email: user.email,
-       role: user.user_metadata?.role || "locataire"
-     };
+    
+const user = data.user;
+
+const { data: profile, error: profileError } =
+  await window.supabaseClient
+    .from("profiles")
+    .select("full_name, role")
+    .eq("id", user.id)
+    .single();
+
+if (profileError) {
+  throw profileError;
+}
+
+const session = {
+  id: user.id,
+  name: profile.full_name || user.email,
+  email: user.email,
+  role: profile.role
+};
 
      localStorage.setItem(
        "villalink_session",
