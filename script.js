@@ -1401,9 +1401,9 @@ const role = ["locataire", "proprietaire"].includes(roleSelect?.value)
          password
        });
 
-     if (error) throw error;
 
-    
+if (error) throw error;
+
 const user = data.user;
 
 const { data: profile, error: profileError } =
@@ -1411,11 +1411,18 @@ const { data: profile, error: profileError } =
     .from("profiles")
     .select("full_name, role")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
 if (profileError) {
   throw profileError;
 }
+
+if (!profile) {
+  throw new Error(
+    "Ton compte a été créé, mais ton profil est introuvable dans Supabase. Vérifie la création du profil."
+  );
+}
+
 
 const session = {
   id: user.id,
