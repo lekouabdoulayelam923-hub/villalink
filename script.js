@@ -1287,6 +1287,39 @@ authToggle?.addEventListener(
 );
 
 
+const forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
+
+forgotPasswordBtn?.addEventListener("click", async () => {
+  const emailInput = document.getElementById("email");
+  const email = emailInput?.value.trim().toLowerCase() || "";
+
+  if (!email) {
+    alert("Entre d'abord ton adresse e-mail dans le champ Email.");
+    emailInput?.focus();
+    return;
+  }
+
+  if (!window.supabaseClient) {
+    alert("Connexion à Supabase impossible.");
+    return;
+  }
+
+  try {
+    const { error } =
+      await window.supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + window.location.pathname
+      });
+
+    if (error) throw error;
+
+    alert("Demande envoyée ! Vérifie tes e-mails et tes courriers indésirables.");
+  } catch (error) {
+    console.error("Erreur de réinitialisation :", error);
+    alert("Erreur : " + error.message);
+  }
+});
+
+
  // ===============================
  // CONNEXION / INSCRIPTION SUPABASE
  // ===============================
